@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import useTheme from '../hooks/useTheme'
 
 function Navbar() {
   const { user, logout } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -11,14 +13,14 @@ function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-white border-b border-gray-100 px-10 py-4 flex items-center justify-between fixed top-0 left-0 z-50">
+    <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-10 py-4 flex items-center justify-between fixed top-0 left-0 z-50 transition-colors duration-300">
 
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
         <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">Q</span>
         </div>
-        <span className="text-xl font-semibold text-gray-800 tracking-tight">
+        <span className="text-xl font-semibold text-gray-800 dark:text-white tracking-tight">
           Queue<span className="text-indigo-500">Less</span>
         </span>
       </Link>
@@ -26,12 +28,24 @@ function Navbar() {
       {/* Right Side */}
       <div className="flex items-center gap-3">
 
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+        >
+          {isDark ? (
+            <span className="text-base">☀️</span>
+          ) : (
+            <span className="text-base">🌙</span>
+          )}
+        </button>
+
         {/* Not logged in */}
         {!user && (
           <>
             <Link
               to="/login"
-              className="text-sm text-gray-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
               Login
             </Link>
@@ -47,12 +61,12 @@ function Navbar() {
         {/* Logged in as User */}
         {user?.role === 'user' && (
           <>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               Hi, {user.name}
             </span>
             <Link
               to="/my-token"
-              className="text-sm text-gray-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
               My Token
             </Link>
@@ -68,12 +82,12 @@ function Navbar() {
         {/* Logged in as Operator */}
         {user?.role === 'operator' && (
           <>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               Hi, {user.name}
             </span>
             <Link
               to="/operator"
-              className="text-sm text-gray-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
               Dashboard
             </Link>
@@ -89,12 +103,12 @@ function Navbar() {
         {/* Logged in as Admin */}
         {user?.role === 'admin' && (
           <>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               Hi, {user.name}
             </span>
             <Link
               to="/admin"
-              className="text-sm text-gray-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
               Overview
             </Link>
