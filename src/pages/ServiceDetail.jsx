@@ -30,7 +30,7 @@ const serviceCenters = {
   4: {
     name: "HealthPlus Clinic",
     type: "General Physician Clinic",
-     category: "Clinic",
+    category: "Clinic",
     waiting: 6,
     waitTime: "12 min",
     counters: 2,
@@ -39,7 +39,7 @@ const serviceCenters = {
   5: {
     name: "MedCare Centre",
     type: "Diagnostic & Consultation",
-     category: "Clinic",
+    category: "Clinic",
     waiting: 10,
     waitTime: "20 min",
     counters: 3,
@@ -48,7 +48,7 @@ const serviceCenters = {
   6: {
     name: "WellLife Clinic",
     type: "Family Health Clinic",
-     category: "Clinic",
+    category: "Clinic",
     waiting: 4,
     waitTime: "8 min",
     counters: 1,
@@ -135,7 +135,7 @@ const servicesByCategory = {
     { id: 2, name: "Application Submission", duration: "10 mins" },
     { id: 3, name: "Token Collection", duration: "5 mins" },
   ],
-}
+};
 const countersByCategory = {
   Hospital: [
     {
@@ -236,14 +236,12 @@ const countersByCategory = {
 
 function ServiceDetail() {
   const { id } = useParams();
-  
+
   const center = serviceCenters[id];
 
-const services =
-  servicesByCategory[center?.category] || [];
+  const services = servicesByCategory[center?.category] || [];
 
-const counters =
-  countersByCategory[center?.category] || [];
+  const counters = countersByCategory[center?.category] || [];
 
   const [token, setToken] = useState(null);
 
@@ -252,14 +250,32 @@ const counters =
   }
 
   const handleJoinQueue = (counter) => {
-    setToken({
+    let status = "Waiting";
+
+    if (counter.waiting <= 3) {
+      status = "Serving";
+    } else if (counter.waiting <= 8) {
+      status = "Called";
+    }
+
+    const tokenData = {
       number: `A-${100 + counter.id}`,
+      center: center.name,
       counter: counter.name,
       service: counter.service,
-      wait: counter.wait,
-    });
-  };
 
+      position: counter.waiting,
+      wait: counter.wait,
+
+      progress: Math.max(10, Math.min(90, 100 - counter.waiting * 5)),
+
+      status,
+    };
+
+    localStorage.setItem("currentToken", JSON.stringify(tokenData));
+
+    setToken(tokenData);
+  };
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300 pt-20">
       <Navbar />
