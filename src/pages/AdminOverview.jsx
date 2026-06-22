@@ -28,7 +28,7 @@ function AdminOverview() {
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300">
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-4 pt-27 pb-8">
+      <main className="max-w-3xl mx-auto px-4 pt-24 pb-8">
         <h1 className="text-2xl font-semibold text-[#111827] dark:text-white mb-6">
           Admin Overview
         </h1>
@@ -61,7 +61,7 @@ function AdminOverview() {
                 className="flex items-center justify-between py-4"
               >
                 <div>
-                  <p className="text-sm font-medium text-[#111827]">
+                  <p className="text-sm font-medium text-[#111827] dark:text-white">
                     {counter.name}
                   </p>
 
