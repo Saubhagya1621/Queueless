@@ -59,7 +59,7 @@ function ServiceDetail() {
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300 pt-20">
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-4 pt-10 pb-7">
+      <main className="max-w-3xl mx-auto px-4 pt-24 pb-7">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-[#111827] dark:text-white">
             {hospital.name}
