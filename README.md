@@ -1,16 +1,16 @@
-# 🎫 QueueLess
+# <h1 align="center">🎫 QueueLess</h1>
 
 <div align="center">
-  [cite_start]<h3><strong>"Skip the queue, not your turn"</strong> [cite: 4]</h3>
-  [cite_start]<p><strong>Real-Time Digital Queue & Token Management Platform</strong> [cite: 3]</p>
+  <h3><strong>"Skip the queue, not your turn"</strong></h3>
+  <p><strong>Real-Time Digital Queue & Token Management Platform</strong></p>
 
 [![Made with React](https://img.shields.io/badge/Frontend-React_19-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB_Atlas-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com)
 [![Socket.io](https://img.shields.io/badge/Realtime-Socket.io-010101?style=for-the-badge&logo=socketdotio)](https://socket.io)
 [![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
-[![Timeline: Hackathon MVP](https://img.shields.io/badge/Timeline-Hackathon%20MVP-orange.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Timeline](https://img.shields.io/badge/Timeline-Hackathon%20MVP%202026-orange?style=for-the-badge&logo=calendar&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT%20Licensed-blue?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
 
 ---
 > QueueLess is a smart, real-time digital queue and token management system that eliminates the need for customers to stand in physical waiting lines at hospitals, banks, and government offices.
@@ -36,21 +36,22 @@
 
 ## 🎯 Project Theme
 * **Theme Selection:** Smart Token Management and Appointment Platform.
-* [cite_start]**Context:** Developed as a high-fidelity **Hackathon MVP** [cite: 5] for the *TechPreneur Industrial Training 2026* organized by *Gryork Consultants Pvt. Ltd.*
-* [cite_start]**Document Version:** v1.0 (June 2026)[cite: 1].
+* **Context:** Developed as a high-fidelity **Hackathon MVP** for the *TechPreneur Industrial Training 2026* organized by *Gryork Consultants Pvt. Ltd.*
+* **Document Version:** v1.0 (June 2026).
 
 ---
 
 ## 🚨 Problem Statement
  
-Long waiting queues remain a major challenge across India in hospitals, banks, government offices, and service centres. Traditional systems rely on manual processes and physical waiting lines, leading to:
+<p align="justify">Long waiting queues remain a major challenge across India in hospitals, banks, government offices, and service centres. Traditional systems rely on manual processes and physical waiting lines, leading to:</p>
  
 - 🕐 Long physical waiting times
 - 👥 Overcrowded waiting areas
 - ❓ Lack of transparency in queue status
 - 📋 Inefficient manual token handling
 - 📊 No real-time updates or notifications
-A recent **Frontline (The Hindu)** report on *"Queue Republic: India, Time Poverty and Urban Inequality"* highlights how citizens spend significant amounts of time waiting for essential services — a form of time poverty affecting productivity and quality of life.
+
+<p align="justify">A recent **Frontline (The Hindu)** report on *"Queue Republic: India, Time Poverty and Urban Inequality"* highlights how citizens spend significant amounts of time waiting for essential services — a form of time poverty affecting productivity and quality of life.</p>
 
 ---
 
@@ -68,7 +69,9 @@ QueueLess addresses these challenges through:
 
 ## 🛠️ Complete Tech Stack Details
 
-### Frontend
+<div align = "center">
+<h2><strong>Frontend</strong></h2>
+
 | Technology | Purpose |
 |---|---|
 | **React 19** | UI library with component-based architecture |
@@ -78,8 +81,11 @@ QueueLess addresses these challenges through:
 | **Socket.io Client** | Real-time live queue updates |
 | **Axios** | HTTP client for API communication |
 | **React Hot Toast** | Toast notifications |
+</div>
  
-### Backend
+<div align = "center">
+<h2><strong>Backend</strong></h2>
+
 | Technology | Purpose |
 |---|---|
 | **Node.js** | JavaScript runtime environment |
@@ -92,8 +98,12 @@ QueueLess addresses these challenges through:
 | **cookie-parser** | HTTP cookie handling |
 | **dotenv** | Environment variable management |
 | **cors** | Cross-origin resource sharing |
- 
-### Architecture
+</div>
+
+<div align = "center">
+<h2><strong>Architecture</strong></h2>
+</div>
+
 - **MERN Stack** — MongoDB, Express, React, Node.js
 - **REST API** — structured API endpoints with role-based access
 - **WebSockets** — Socket.io for real-time synchronisation
@@ -235,16 +245,21 @@ Frontend runs at `http://localhost:5173`
 
 ---
 
-##📡 API Endpoints Reference
+## 📡 API Endpoints Reference
 
-### Auth
+<div align = "center">
+<h2>Auth</h2>
+
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/api/auth/register` | Register new user |
 | POST | `/api/auth/login` | Login user |
 | POST | `/api/auth/logout` | Logout user |
+</div>
  
-### Service Centers
+<div align = "center"> 
+<h2>Service Centers</h2>
+
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
 | GET | `/api/servicecenter` | Get all service centers | No |
@@ -252,24 +267,28 @@ Frontend runs at `http://localhost:5173`
 | POST | `/api/servicecenter/join` | Join a queue | Yes |
 | GET | `/api/servicecenter/token/my-token` | Get my active token | Yes |
 | PATCH | `/api/servicecenter/token/:id/cancel` | Cancel token | Yes |
- 
-### Operator
+</div>
+<div align="center">
+<h2>Operator</h2>
+
 | Method | Endpoint | Description | Role |
 |---|---|---|---|
 | GET | `/api/operator/queue/:counterId` | Get queue for counter | Operator |
 | PATCH | `/api/operator/call-next` | Call next token | Operator |
 | PATCH | `/api/operator/skip/:id` | Skip token | Operator |
 | POST | `/api/operator/walk-in` | Add walk-in | Operator |
- 
-### Admin
+</div>
+<div align="center">
+<h2>Admin</h2>
+
 | Method | Endpoint | Description | Role |
 |---|---|---|---|
 | GET | `/api/admin/overview` | Get full overview | Admin |
 | PATCH | `/api/admin/counter/:centerId/:counterId` | Toggle counter status | Admin |
-
+</div>
 ---
 
-##🤝 User Roles
+## 🤝 User Roles
 
 ```
 Customer  →  Browse centers → Join queue → Track token → Cancel token
@@ -279,7 +298,7 @@ Admin     →  Monitor all counters → View analytics → Open/close counters
 
 ---
 
-##🔮 Future Roadmap
+## 🔮 Future Roadmap
 
 | Phase | Planned Features |
 |---|---|
@@ -288,22 +307,24 @@ Admin     →  Monitor all counters → View analytics → Open/close counters
 
 ---
 
-##👥 Team Identity & Roles
-
-[cite_start]**Team Name:** NextUp [cite: 7]
+## 👥 Team Identity & Roles
+<div align="center">
+<h2><strong>Team Name: <b>NextUp</b><strong></h2>
+</div>
 
 | Team Member | Official Designation & Responsibilities | ID |
 | :--- | :--- | :--- |
-| **Saubhagya Srivastava** | [cite_start]Full Stack Lead & Team Coordination [cite: 6] | TECHA84998 |
-| **Sarvesh Kumar** | [cite_start]Backend Developer [cite: 6] | TECHDAC0C8 |
-| **Shalini Yadav** | [cite_start]Frontend Developer [cite: 6] | TECH012FF3 |
-| **Sumit Kumar** | [cite_start]Testing & Documentation [cite: 6] | TECHA12F49 |
+| **Saubhagya Srivastava** | Full Stack Lead & Team Coordination | TECHA84998 |
+| **Sarvesh Kumar** | Backend Developer | TECHDAC0C8 |
+| **Shalini Yadav** | Frontend Developer | TECH012FF3 |
+| **Sumit Kumar** | Testing & Documentation | TECHA12F49 |
 
-**Built with ❤️ for TechPreneur Industrial Training 2026**
+
+*Built with ❤️ for TechPreneur Industrial Training 2026*
 
 ---
 
-##📄 License
+## 📄 License
 
 Distributed under the MIT License. See the internal repository LICENSE details for full operational terms and permissions.
 
