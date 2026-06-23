@@ -1,29 +1,49 @@
-import { useState } from 'react'
-import Navbar from '../components/Navbar'
-
-const initialCounters = [
-  { id: 1, name: 'Counter 1', status: 'Active', waiting: 8 },
-  { id: 2, name: 'Counter 2', status: 'Active', waiting: 5 },
-  { id: 3, name: 'Counter 3', status: 'Idle', waiting: 0 },
-]
+import { useEffect, useState } from "react";
+import { getAdminOverview, toggleCounter } from "../utils/api";
+import Navbar from "../components/Navbar";
 
 function AdminOverview() {
-  const [counters, setCounters] = useState(initialCounters)
+  const [counters, setCounters] = useState([]);
+  const [summary, setSummary] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const fetchOverview = async () => {
+      try {
+        const data = await getAdminOverview();
 
-  const toggleStatus = (id, newStatus) => {
-    setCounters((prev) =>
-      prev.map((counter) =>
-        counter.id === id ? { ...counter, status: newStatus } : counter
-      )
-    )
+        setCounters(data.counters || []);
+        setSummary(data.summary || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load admin overview");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOverview();
+  }, []);
+
+  const toggleStatus = async (id, newStatus) => {
+    try {
+      await toggleCounter(id, newStatus);
+
+      setCounters((prev) =>
+        prev.map((counter) =>
+          counter.id === id ? { ...counter, status: newStatus } : counter,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  if (loading) {
+    return <div className="p-10 text-center">Loading Admin Overview...</div>;
   }
-
-  const summary = [
-    { label: 'Total Waiting', value: 24 },
-    { label: 'Total Served Today', value: 87 },
-    { label: 'Active Counters', value: 3 },
-  ]
-
+  if (error) {
+    return <div className="p-10 text-center text-red-500">{error}</div>;
+  }
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300">
       <Navbar />
@@ -43,7 +63,9 @@ function AdminOverview() {
               <p className="text-2xl font-semibold text-[#6366F1]">
                 {item.value}
               </p>
-              <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">{item.label}</p>
+              <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
+                {item.label}
+              </p>
             </div>
           ))}
         </div>
@@ -68,9 +90,9 @@ function AdminOverview() {
                   <div className="flex items-center gap-2 mt-1">
                     <span
                       className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        counter.status === 'Active'
-                          ? 'bg-[#10B981]/10 text-[#10B981]'
-                          : 'bg-[#F59E0B]/10 text-[#F59E0B]'
+                        counter.status === "Active"
+                          ? "bg-[#10B981]/10 text-[#10B981]"
+                          : "bg-[#F59E0B]/10 text-[#F59E0B]"
                       }`}
                     >
                       {counter.status}
@@ -84,16 +106,16 @@ function AdminOverview() {
 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => toggleStatus(counter.id, 'Active')}
-                    disabled={counter.status === 'Active'}
+                    onClick={() => toggleStatus(counter.id, "Active")}
+                    disabled={counter.status === "Active"}
                     className="text-xs font-medium px-3 py-1.5 rounded-lg bg-[#6366F1] text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#4F46E5] transition-colors"
                   >
                     Open
                   </button>
 
                   <button
-                    onClick={() => toggleStatus(counter.id, 'Idle')}
-                    disabled={counter.status === 'Idle'}
+                    onClick={() => toggleStatus(counter.id, "Idle")}
+                    disabled={counter.status === "Idle"}
                     className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[#111827] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                   >
                     Close
@@ -105,7 +127,7 @@ function AdminOverview() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default AdminOverview
+export default AdminOverview;

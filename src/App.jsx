@@ -1,15 +1,15 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
-import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Home from './pages/Home'
-import ServiceDetail from './pages/ServiceDetail'
-import MyToken from './pages/MyToken'
-import OperatorDashboard from './pages/OperatorDashboard'
-import AdminOverview from './pages/AdminOverview'
-import ProtectedRoute from './components/ProtectedRoute'
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import ServiceDetail from "./pages/ServiceDetail";
+import MyToken from "./pages/MyToken";
+import OperatorDashboard from "./pages/OperatorDashboard";
+import AdminOverview from "./pages/AdminOverview";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -37,10 +37,17 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/admin" element={<AdminOverview />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminOverview />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

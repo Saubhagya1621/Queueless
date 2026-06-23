@@ -1,249 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getServiceCenterById } from "../utils/api";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
-const serviceCenters = {
-  1: {
-    name: "City Care Hospital",
-    type: "Multi-speciality Hospital · OPD Services",
-    category: "Hospital",
-    waiting: 12,
-    waitTime: "25 min",
-    counters: 3,
-  },
-  2: {
-    name: "District Hospital",
-    type: "Government Hospital · General Services",
-    category: "Hospital",
-    waiting: 25,
-    waitTime: "40 min",
-    counters: 5,
-  },
-  3: {
-    name: "Apollo Clinic",
-    type: "Private Clinic · Specialist Care",
-    category: "Hospital",
-    waiting: 8,
-    waitTime: "15 min",
-    counters: 2,
-  },
-  4: {
-    name: "HealthPlus Clinic",
-    type: "General Physician Clinic",
-    category: "Clinic",
-    waiting: 6,
-    waitTime: "12 min",
-    counters: 2,
-  },
-
-  5: {
-    name: "MedCare Centre",
-    type: "Diagnostic & Consultation",
-    category: "Clinic",
-    waiting: 10,
-    waitTime: "20 min",
-    counters: 3,
-  },
-
-  6: {
-    name: "WellLife Clinic",
-    type: "Family Health Clinic",
-    category: "Clinic",
-    waiting: 4,
-    waitTime: "8 min",
-    counters: 1,
-  },
-
-  7: {
-    name: "SBI Bank Branch",
-    type: "State Bank of India",
-    category: "Bank",
-    waiting: 18,
-    waitTime: "30 min",
-    counters: 4,
-  },
-
-  8: {
-    name: "HDFC Bank",
-    type: "Private Sector Bank",
-    category: "Bank",
-    waiting: 10,
-    waitTime: "18 min",
-    counters: 3,
-  },
-
-  9: {
-    name: "Bank of Baroda",
-    type: "Public Sector Bank",
-    category: "Bank",
-    waiting: 14,
-    waitTime: "22 min",
-    counters: 3,
-  },
-
-  10: {
-    name: "Regional Passport Office",
-    type: "Government Office",
-    category: "Government",
-    waiting: 35,
-    waitTime: "55 min",
-    counters: 6,
-  },
-
-  11: {
-    name: "RTO Office",
-    type: "Regional Transport Office",
-    category: "Government",
-    waiting: 20,
-    waitTime: "35 min",
-    counters: 3,
-  },
-
-  12: {
-    name: "Ration Card Office",
-    type: "Civil Supplies Department",
-    category: "Government",
-    waiting: 28,
-    waitTime: "45 min",
-    counters: 4,
-  },
-};
-
-const servicesByCategory = {
-  Hospital: [
-    { id: 1, name: "General Consultation", duration: "10-15 mins" },
-    { id: 2, name: "Blood Test", duration: "5-10 mins" },
-    { id: 3, name: "X-Ray Scan", duration: "15-20 mins" },
-    { id: 4, name: "Pharmacy Pickup", duration: "5 mins" },
-  ],
-
-  Clinic: [
-    { id: 1, name: "Doctor Consultation", duration: "10 mins" },
-    { id: 2, name: "Vaccination", duration: "5 mins" },
-    { id: 3, name: "Health Checkup", duration: "20 mins" },
-  ],
-
-  Bank: [
-    { id: 1, name: "Cash Deposit", duration: "5 mins" },
-    { id: 2, name: "Cash Withdrawal", duration: "5 mins" },
-    { id: 3, name: "Account Opening", duration: "20 mins" },
-    { id: 4, name: "Passbook Update", duration: "3 mins" },
-  ],
-
-  Government: [
-    { id: 1, name: "Document Verification", duration: "15 mins" },
-    { id: 2, name: "Application Submission", duration: "10 mins" },
-    { id: 3, name: "Token Collection", duration: "5 mins" },
-  ],
-};
-const countersByCategory = {
-  Hospital: [
-    {
-      id: 1,
-      name: "Counter 1",
-      service: "General Consultation",
-      waiting: 12,
-      wait: "20 min",
-    },
-    {
-      id: 2,
-      name: "Counter 2",
-      service: "Blood Test",
-      waiting: 5,
-      wait: "10 min",
-    },
-    {
-      id: 3,
-      name: "Counter 3",
-      service: "X-Ray Scan",
-      waiting: 3,
-      wait: "6 min",
-    },
-  ],
-
-  Clinic: [
-    {
-      id: 1,
-      name: "Counter 1",
-      service: "Doctor Consultation",
-      waiting: 8,
-      wait: "12 min",
-    },
-    {
-      id: 2,
-      name: "Counter 2",
-      service: "Vaccination",
-      waiting: 4,
-      wait: "8 min",
-    },
-    {
-      id: 3,
-      name: "Counter 3",
-      service: "Health Checkup",
-      waiting: 2,
-      wait: "5 min",
-    },
-  ],
-
-  Bank: [
-    {
-      id: 1,
-      name: "Counter 1",
-      service: "Cash Deposit",
-      waiting: 10,
-      wait: "15 min",
-    },
-    {
-      id: 2,
-      name: "Counter 2",
-      service: "Cash Withdrawal",
-      waiting: 6,
-      wait: "10 min",
-    },
-    {
-      id: 3,
-      name: "Counter 3",
-      service: "Account Opening",
-      waiting: 4,
-      wait: "20 min",
-    },
-  ],
-
-  Government: [
-    {
-      id: 1,
-      name: "Counter 1",
-      service: "Document Verification",
-      waiting: 15,
-      wait: "25 min",
-    },
-    {
-      id: 2,
-      name: "Counter 2",
-      service: "Application Submission",
-      waiting: 8,
-      wait: "15 min",
-    },
-    {
-      id: 3,
-      name: "Counter 3",
-      service: "Token Collection",
-      waiting: 5,
-      wait: "10 min",
-    },
-  ],
-};
 
 function ServiceDetail() {
   const { id } = useParams();
 
-  const center = serviceCenters[id];
-
-  const services = servicesByCategory[center?.category] || [];
-
-  const counters = countersByCategory[center?.category] || [];
+  const [center, setCenter] = useState(null);
+  const [services, setServices] = useState([]);
+  const [counters, setCounters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [token, setToken] = useState(null);
+  useEffect(() => {
+    const fetchCenter = async () => {
+      try {
+        setLoading(true);
+
+        const data = await getServiceCenterById(id);
+
+        setCenter(data);
+        setServices(data.services || []);
+        setCounters(data.counters || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load service center");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCenter();
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-10 text-center">Loading...</div>;
+  }
+  if (error) {
+    return <div className="p-10 text-center text-red-500">{error}</div>;
+  }
 
   if (!center) {
     return <div className="p-10 text-center">Service Center Not Found</div>;
