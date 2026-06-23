@@ -156,7 +156,7 @@ const OperatorDashboard = () => {
 
             <div
               className="
-              rounded-[32px]
+              rounded-4xl
 
               bg-white
               dark:bg-[#07111f]
@@ -427,7 +427,7 @@ const OperatorDashboard = () => {
             border-slate-200
             dark:border-slate-800
 
-            rounded-[32px]
+            rounded-4xl
 
             overflow-hidden
 
@@ -486,7 +486,7 @@ const OperatorDashboard = () => {
 
             {/* QUEUE LIST */}
 
-            <div className="p-4 space-y-4 max-h-[620px] overflow-y-auto">
+            <div className="p-4 space-y-4 max-h-155 overflow-y-auto">
 
               {queue.map((item) => (
                 <QueueItem

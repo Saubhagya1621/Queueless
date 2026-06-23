@@ -11,6 +11,12 @@ function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  const quickFill = (role) => {
+    if (role === 'user') { setEmail('user@test.com'); setPassword('123456') }
+    if (role === 'operator') { setEmail('operator@test.com'); setPassword('123456') }
+    if (role === 'admin') { setEmail('admin@test.com'); setPassword('123456') }
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
@@ -70,6 +76,31 @@ function Login() {
           Login to manage your queue
         </p>
 
+        {/* Quick Login */}
+        <div className="flex gap-2 mb-6">
+          <button
+            type="button"
+            onClick={() => quickFill('user')}
+            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
+          >
+            Customer
+          </button>
+          <button
+            type="button"
+            onClick={() => quickFill('operator')}
+            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
+          >
+            Operator
+          </button>
+          <button
+            type="button"
+            onClick={() => quickFill('admin')}
+            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
+          >
+            Admin
+          </button>
+        </div>
+
         {/* Error */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-lg mb-4">
@@ -125,14 +156,6 @@ function Login() {
             Register
           </Link>
         </p>
-
-        {/* Test credentials */}
-        <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-xs text-gray-400">
-          <p className="font-medium text-gray-500 dark:text-gray-300 mb-1">Test credentials</p>
-          <p>User → user@test.com / 123456</p>
-          <p>Operator → operator@test.com / 123456</p>
-          <p>Admin → admin@test.com / 123456</p>
-        </div>
 
       </div>
     </div>

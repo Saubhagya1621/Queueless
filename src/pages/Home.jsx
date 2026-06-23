@@ -124,7 +124,7 @@ function Home() {
       <Navbar />
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-400 pt-28 pb-20 px-6">
+      <div className="bg-linear-to-r from-indigo-600 to-indigo-400 pt-28 pb-20 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <p className="text-indigo-200 text-sm font-medium mb-1">
             Welcome to QueueLess
