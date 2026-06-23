@@ -23,7 +23,7 @@
 * [🎯 Project Theme](#-project-theme)
 * [🚨 Problem Statement](#-problem-statement)
 * [✅ Solution & Core Value Proposition](#-solution--core-value-proposition)
-* [🛠️ Complete Tech Stack Details](#️complete-tech-stack-details)
+* [🛠️ Complete Tech Stack Details](#️-complete-tech-stack-details)
 * [📁 Project Structure](#-project-structure)
 * [🚀 Setup and Run Instructions](#-setup-and-run-instructions)
 * [📡 API Endpoints Reference](#-api-endpoints-reference)
