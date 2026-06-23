@@ -14,21 +14,29 @@ This document describes the development workflow, coding standards, team respons
 
 # Table of Contents
 
-1. Technology Stack
-2. Project Status
-3. Team Structure & Feature Distribution
-4. Git Branching Strategy
-5. Contribution Workflow
-6. Commit Message Convention
-7. Issue Tracking and Communication
-8. Pull Request Policy
-9. Coding Standards
-10. General Contribution Guidelines
-11. Getting Started
-12. Best Practices
-13. Acknowledgements
-14. Code of Conduct
-15. License
+* [Technology Stack](#technology-stack)
+* [Project Status](#project-status)
+* [Team Structure & Feature Distribution](#team-structure--feature-distribution)
+* [Feature Distribution](#feature-distribution)
+* [Git Branching Strategy](#git-branching-strategy)
+* [Contribution Workflow](#contribution-workflow)
+* [Commit Message Convention](#commit-message-convention)
+* [Issue Tracking and Communication](#issue-tracking-and-communication)
+* [Pull Request Policy](#pull-request-policy)
+* [Coding Standards](#coding-standards)
+
+  * [General Guidelines](#general-guidelines)
+  * [Frontend Standards](#frontend-standards)
+  * [Backend Standards](#backend-standards)
+  * [Code Quality](#code-quality)
+* [General Contribution Guidelines](#general-contribution-guidelines)
+* [Getting Started](#getting-started)
+* [Best Practices](#best-practices)
+* [Code of Conduct](#code-of-conduct)
+* [License](#license)
+* [Acknowledgements](#acknowledgements)
+* [Thank You](#thank-you)
+
 
 ---
 
