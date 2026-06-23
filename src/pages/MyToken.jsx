@@ -1,23 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import { getMyToken, cancelToken } from "../utils/api";
 
 function MyToken() {
-  const [token, setToken] = useState(() => {
-    const savedToken = localStorage.getItem("currentToken");
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    return savedToken ? JSON.parse(savedToken) : null;
-  });
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const data = await getMyToken();
+        setToken(data || null);
+      } catch (err) {
+        setToken(null);
+        setError("Could not load your token.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCancelToken = () => {
-    localStorage.removeItem("currentToken");
-    setToken(null);
+    fetchToken();
+  }, []);
+
+  const handleCancelToken = async () => {
+    try {
+      await cancelToken(token.id);
+      setToken(null);
+    } catch (err) {
+      setError("Could not cancel your token. Please try again.");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300 pt-20">
+        <Navbar />
+        <main className="max-w-2xl mx-auto px-4 pt-12">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 text-center">
+            <p className="text-gray-500 dark:text-gray-400">Loading your token...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300 pt-20">
       <Navbar />
 
       <main className="max-w-2xl mx-auto px-4 pt-12">
+        {error && (
+          <div className="mb-4 text-center text-sm text-red-500">{error}</div>
+        )}
+
         {!token ? (
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 text-center">
             <h2 className="text-2xl font-semibold text-[#111827] dark:text-white">

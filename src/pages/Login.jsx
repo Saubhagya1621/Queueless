@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import toast from 'react-hot-toast'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -42,6 +43,7 @@ function Login() {
       // ----- END REAL API -----
 
       login(userData)
+      toast.success('Login successful!')
 
       if (userData.role === 'user') navigate('/home')
       if (userData.role === 'operator') navigate('/operator')
@@ -49,6 +51,7 @@ function Login() {
 
     } catch (err) {
       setError(err.message || 'Something went wrong')
+      toast.error(err.message || 'Login failed')
     } finally {
       setLoading(false)
     }
