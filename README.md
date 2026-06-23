@@ -286,6 +286,7 @@ Frontend runs at `http://localhost:5173`
 | GET | `/api/admin/overview` | Get full overview | Admin |
 | PATCH | `/api/admin/counter/:centerId/:counterId` | Toggle counter status | Admin |
 </div>
+
 ---
 
 ## 🤝 User Roles
