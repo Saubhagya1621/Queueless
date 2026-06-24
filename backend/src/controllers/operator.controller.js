@@ -4,10 +4,13 @@ import { io } from '../index.js'
 
 const getQueueByCounter = async (req, res) => {
   try {
-    const { counterId } = req.params
-    const tokens = await Token.find({ counterId, status: 'waiting' })
+    const counterId = req.user.counterId
+    if (!counterId) return res.status(400).json({ message: 'No counter assigned to this operator' })
+
+    const tokens = await Token.find({ counterId, status: { $in: ['waiting', 'called'] } })
       .populate('userId', 'name phone')
       .sort({ position: 1 })
+
     res.status(200).json({ tokens })
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -16,7 +19,8 @@ const getQueueByCounter = async (req, res) => {
 
 const callNext = async (req, res) => {
   try {
-    const { counterId } = req.body
+    const counterId = req.user.counterId
+    if (!counterId) return res.status(400).json({ message: 'No counter assigned' })
 
     const current = await Token.findOne({ counterId, status: 'called' })
     if (current) {
@@ -36,7 +40,10 @@ const callNext = async (req, res) => {
     await next.save()
 
     io.to(next.serviceCenterId.toString()).emit('queue:updated', { counterId })
-    io.to(next.serviceCenterId.toString()).emit('token:called', { tokenId: next._id, userId: next.userId })
+    io.to(next.serviceCenterId.toString()).emit('token:called', {
+      tokenId: next._id,
+      userId: next.userId
+    })
 
     res.status(200).json({ message: 'Next token called', token: next })
   } catch (error) {
@@ -67,10 +74,15 @@ const skipToken = async (req, res) => {
 
 const addWalkIn = async (req, res) => {
   try {
-    const { serviceCenterId, counterId } = req.body
+    const counterId = req.user.counterId
+    const serviceCenterId = req.user.serviceCenterId
+    if (!counterId || !serviceCenterId) return res.status(400).json({ message: 'No counter assigned' })
 
     const center = await ServiceCenter.findById(serviceCenterId)
+    if (!center) return res.status(404).json({ message: 'Service center not found' })
+
     const counter = center.counters.id(counterId)
+    if (!counter) return res.status(404).json({ message: 'Counter not found' })
 
     const waitingCount = await Token.countDocuments({ counterId, status: 'waiting' })
 

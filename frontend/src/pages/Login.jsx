@@ -2,63 +2,68 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import toast from 'react-hot-toast'
+import { loginUser } from '../utils/api'
+
+const DEMO_CREDENTIALS = {
+  operator: [
+    { email: 'op.hospital1@test.com', label: 'City Hospital — Counter 1' },
+    { email: 'op.hospital2@test.com', label: 'City Hospital — Counter 2' },
+    { email: 'op.sbi1@test.com', label: 'SBI — Counter 1' },
+    { email: 'op.sbi2@test.com', label: 'SBI — Counter 2' },
+    { email: 'op.passport1@test.com', label: 'Passport Office — Counter 1' },
+    { email: 'op.hdfc1@test.com', label: 'HDFC Bank — Counter 1' },
+    { email: 'op.disthospital1@test.com', label: 'District Hospital — Counter 1' },
+    { email: 'op.rto1@test.com', label: 'RTO Office — Counter 1' },
+  ],
+  admin: [
+    { email: 'admin.hospital@test.com', label: 'City Hospital' },
+    { email: 'admin.sbi@test.com', label: 'State Bank of India' },
+    { email: 'admin.passport@test.com', label: 'Regional Passport Office' },
+    { email: 'admin.hdfc@test.com', label: 'HDFC Bank' },
+    { email: 'admin.disthospital@test.com', label: 'District Hospital' },
+    { email: 'admin.rto@test.com', label: 'RTO Office' },
+  ],
+}
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showCreds, setShowCreds] = useState(false)
+  const [activeTab, setActiveTab] = useState('operator')
 
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const quickFill = (role) => {
-    if (role === 'user') { setEmail('user@test.com'); setPassword('123456') }
-    if (role === 'operator') { setEmail('operator@test.com'); setPassword('123456') }
-    if (role === 'admin') { setEmail('admin@test.com'); setPassword('123456') }
+    if (role === 'operator') { setEmail('op.hospital1@test.com'); setPassword('123456') }
+    if (role === 'admin') { setEmail('admin.hospital@test.com'); setPassword('123456') }
   }
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
-      // ----- FAKE DATA — remove this block when backend is ready -----
-      const fakeUsers = [
-        { id: 1, name: 'Rahul', email: 'user@test.com', password: '123456', role: 'user' },
-        { id: 2, name: 'Priya', email: 'operator@test.com', password: '123456', role: 'operator' },
-        { id: 3, name: 'Admin', email: 'admin@test.com', password: '123456', role: 'admin' },
-      ]
-      const foundUser = fakeUsers.find(
-        (u) => u.email === email && u.password === password
-      )
-      if (!foundUser) throw new Error('Invalid email or password')
-      const userData = foundUser
-      // ----- END FAKE DATA -----
-
-      // ----- REAL API — uncomment this when backend is ready -----
-      // const response = await loginUser(email, password)
-      // const userData = response.data.user
-      // ----- END REAL API -----
-
+      const response = await loginUser(email, password)
+      const userData = response.user
       login(userData)
       toast.success('Login successful!')
-
       if (userData.role === 'user') navigate('/home')
       if (userData.role === 'operator') navigate('/operator')
       if (userData.role === 'admin') navigate('/admin')
-
     } catch (err) {
-      setError(err.message || 'Something went wrong')
-      toast.error(err.message || 'Login failed')
+      const message = err?.response?.data?.message || 'Something went wrong'
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-10 transition-colors duration-300">
       <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
 
         {/* Logo */}
@@ -70,54 +75,89 @@ function Login() {
             Queue<span className="text-indigo-500">Less</span>
           </span>
         </div>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-500 transition-colors mb-6"
+        >
+          ← Back to Home
+        </Link>
 
-        {/* Heading */}
-        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-1">
-          Welcome back
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-          Login to manage your queue
-        </p>
+        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-1">Welcome back</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Login to manage your queue</p>
 
-        {/* Quick Login */}
-        <div className="flex gap-2 mb-6">
-          <button
-            type="button"
-            onClick={() => quickFill('user')}
-            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
-          >
-            Customer
-          </button>
-          <button
-            type="button"
-            onClick={() => quickFill('operator')}
-            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
-          >
-            Operator
-          </button>
-          <button
-            type="button"
-            onClick={() => quickFill('admin')}
-            className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all"
-          >
-            Admin
-          </button>
+        {/* Quick fill — operator/admin only */}
+        <div className="flex gap-2 mb-4">
+          {['operator', 'admin'].map((role) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => quickFill(role)}
+              className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all capitalize"
+            >
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </button>
+          ))}
         </div>
 
-        {/* Error */}
+        {/* Demo credentials toggle */}
+        <button
+          type="button"
+          onClick={() => setShowCreds(prev => !prev)}
+          className="w-full text-xs text-indigo-500 hover:text-indigo-600 font-medium mb-5 text-left transition-colors"
+        >
+          {showCreds ? '▲ Hide demo credentials' : '▼ View all demo credentials'}
+        </button>
+
+        {/* Credentials card */}
+        {showCreds && (
+          <div className="mb-6 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-4">
+            <div className="flex gap-2 mb-3">
+              {['operator', 'admin'].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-all capitalize ${activeTab === tab
+                      ? 'bg-indigo-500 text-white'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-indigo-500'
+                    }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+              Password for all:{' '}
+              <span className="font-mono font-semibold text-gray-600 dark:text-gray-300">123456</span>
+            </p>
+            <ul className="space-y-1.5 max-h-48 overflow-y-auto">
+              {DEMO_CREDENTIALS[activeTab].map((cred) => (
+                <li key={cred.email}>
+                  <button
+                    type="button"
+                    onClick={() => { setEmail(cred.email); setPassword('123456') }}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all group"
+                  >
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                      {cred.label}
+                    </p>
+                    <p className="text-xs text-gray-400 font-mono">{cred.email}</p>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-lg mb-4">
             {error}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
-
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email
-            </label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               placeholder="you@example.com"
@@ -129,9 +169,7 @@ function Login() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Password
-            </label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               placeholder="••••••••"
@@ -149,15 +187,11 @@ function Login() {
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
-
         </form>
 
-        {/* Footer */}
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-6">
           Don't have an account?{' '}
-          <Link to="/register" className="text-indigo-500 font-medium hover:underline">
-            Register
-          </Link>
+          <Link to="/register" className="text-indigo-500 font-medium hover:underline">Register</Link>
         </p>
 
       </div>

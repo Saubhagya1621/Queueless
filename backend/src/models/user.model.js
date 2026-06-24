@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'operator', 'admin'], default: 'user' }
+  role: { type: String, enum: ['user', 'operator', 'admin'], default: 'user' },
+  serviceCenterId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceCenter', default: null },
+  counterId: { type: mongoose.Schema.Types.ObjectId, default: null }
 }, { timestamps: true })
 
 userSchema.pre('save', async function() {

@@ -7,6 +7,7 @@ import { Server } from 'socket.io'
 import connectDB from './utils/db.js'
 import authRoutes from './routes/auth.routes.js'
 import serviceCenterRoutes from './routes/serviceCenter.routes.js'
+import tokenRoutes from './routes/token.routes.js'
 import operatorRoutes from './routes/operator.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 
@@ -30,19 +31,18 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
-app.use('/api/auth', authRoutes)
-app.use('/api/servicecenter', serviceCenterRoutes)
-app.use('/api/operator', operatorRoutes)
-app.use('/api/admin', adminRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/servicecenter', serviceCenterRoutes)
+app.use('/api/v1/token', tokenRoutes)
+app.use('/api/v1/operator', operatorRoutes)
+app.use('/api/v1/admin', adminRoutes)
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
-
   socket.on('join-room', (serviceCenterId) => {
     socket.join(serviceCenterId)
     console.log(`Socket ${socket.id} joined room ${serviceCenterId}`)
   })
-
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })

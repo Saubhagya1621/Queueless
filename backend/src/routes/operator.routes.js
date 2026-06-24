@@ -7,7 +7,7 @@ const router = express.Router()
 router.use(verifyJWT)
 router.use(verifyRole('operator', 'admin'))
 
-router.get('/queue/:counterId', getQueueByCounter)
+router.get('/queue', getQueueByCounter)
 router.patch('/call-next', callNext)
 router.patch('/skip/:id', skipToken)
 router.post('/walk-in', addWalkIn)

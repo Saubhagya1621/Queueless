@@ -27,8 +27,8 @@ export const getServiceCenterById = async (id) => {
   return response.data
 }
 
-export const joinQueue = async (serviceCenterId) => {
-  const response = await axiosInstance.post('/token/join', { serviceCenterId })
+export const joinQueue = async (serviceCenterId, counterId) => {
+  const response = await axiosInstance.post('/token/join', { serviceCenterId, counterId })
   return response.data
 }
 
@@ -44,22 +44,22 @@ export const cancelToken = async (tokenId) => {
 
 // OPERATOR
 export const getQueueForCounter = async () => {
-  const response = await axiosInstance.get('/queue/counter')
+  const response = await axiosInstance.get('/operator/queue')
   return response.data
 }
 
 export const callNextToken = async () => {
-  const response = await axiosInstance.patch('/queue/call-next')
+  const response = await axiosInstance.patch('/operator/call-next')
   return response.data
 }
 
 export const skipToken = async (tokenId) => {
-  const response = await axiosInstance.patch(`/queue/${tokenId}/skip`)
+  const response = await axiosInstance.patch(`/operator/skip/${tokenId}`)
   return response.data
 }
 
 export const addWalkIn = async () => {
-  const response = await axiosInstance.post('/queue/walk-in')
+  const response = await axiosInstance.post('/operator/walk-in')
   return response.data
 }
 
@@ -69,7 +69,7 @@ export const getAdminOverview = async () => {
   return response.data
 }
 
-export const toggleCounter = async (counterId, status) => {
-  const response = await axiosInstance.patch(`/admin/counter/${counterId}`, { status })
+export const toggleCounter = async (centerId, counterId, status) => {
+  const response = await axiosInstance.patch(`/admin/counter/${centerId}/${counterId}`, { status })
   return response.data
 }
