@@ -44,13 +44,30 @@ const QueueItem = ({
     }
   };
 
+  // Left status indicator bar — green=called, yellow=waiting
+  const getStatusBarColor = () => {
+    switch (item.status) {
+      case "called":
+        return "bg-green-500";
+
+      case "waiting":
+        return "bg-yellow-500";
+
+      default:
+        return "bg-slate-300 dark:bg-slate-700";
+    }
+  };
+
   return (
     <div
       className="
       group
 
+      relative
+
       bg-white
-      dark:bg-slate-900
+      dark:bg-gray-900/70
+      dark:backdrop-blur-xl
 
       border
       border-slate-200
@@ -58,17 +75,36 @@ const QueueItem = ({
 
       rounded-2xl
 
-      p-4
+      pl-6
+      pr-5
+      py-5
 
-      hover:scale-[1.02]
-      hover:shadow-xl
+      overflow-hidden
+
+      shadow-[0_10px_35px_rgba(0,0,0,0.12)]
+      hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)]
+
+      hover:-translate-y-1
 
       transition-all
-      duration-300
+      duration-200
 
       cursor-pointer
       "
     >
+      {/* Left status indicator bar */}
+      <div
+        className={`
+        absolute
+        left-0
+        top-0
+        h-full
+        w-1.5
+
+        ${getStatusBarColor()}
+        `}
+      />
+
       <div className="flex items-center justify-between">
 
         {/* Left */}
