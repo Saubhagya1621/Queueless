@@ -21,24 +21,43 @@ function ServiceDetail() {
         const data = await getServiceCenterById(id);
         setCenter(data.center);
 
-        // 2. Check if user already has an active token for this center
-        try {
-          const tokenRes = await getMyToken();
-          if (tokenRes?.token && tokenRes.token.serviceCenterId._id === id) {
+        // 2. Join the WebSocket room for real-time sync
+        socket.emit("join-room", id);
+
+        // 3. Hydrate state on refresh: check if user already has an active token here
+        // Ensure 'getMyToken' is imported from your api.js utils file
+        const tokenRes = await getMyToken();
+        if (
+          tokenRes?.token &&
+          (tokenRes.token.serviceCenterId === id ||
+            tokenRes.token.serviceCenterId._id === id)
+        ) {
+          if (["waiting", "called"].includes(tokenRes.token.status)) {
             setJoinedToken(tokenRes.token);
           }
-        } catch (tokenErr) {
-          // No active token found, fail silently as it's normal for a non-joined user
-          console.log("No pre-existing active token session.");
         }
-
       } catch (err) {
         setError("Failed to load service center");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCenterAndActiveToken();
+
+    // Listen for real-time queue changes
+    socket.on("queue:updated", async () => {
+      try {
+        const data = await getServiceCenterById(id);
+        setCenter(data.center);
+      } catch (err) {
+        console.log("Error updating socket queue state:", err);
+      }
+    });
+
+    return () => {
+      socket.off("queue:updated");
+    };
   }, [id]);
 
   const handleJoinQueue = async (counterId) => {
@@ -172,8 +191,8 @@ function ServiceDetail() {
                   {joiningCounterId === counter._id
                     ? "Joining..."
                     : !!joinedToken
-                    ? "Joined"
-                    : "Join Queue"}
+                      ? "Joined"
+                      : "Join Queue"}
                 </button>
               </div>
             ))}
