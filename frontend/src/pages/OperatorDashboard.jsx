@@ -4,6 +4,7 @@ import LiveClock from "../components/LiveClock";
 import StatusBadge from "../components/StatusBadge";
 import StatsCard from "../components/StatsCard";
 import QueueItem from "../components/QueueItem";
+import logo from "../assets/Consulting-amico.png"; // 🟩 Asset import is already here
 import {
   getQueueForCounter,
   callNextToken,
@@ -100,13 +101,11 @@ const OperatorDashboard = () => {
     }
   };
 
-  // ---- Skeleton loader ----
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] transition-colors duration-300">
         <Navbar />
         <div className="max-w-7xl mx-auto px-6 pt-28 pb-10 animate-pulse">
-          {/* Header */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
             <div>
               <div className="h-10 w-72 bg-slate-200 dark:bg-slate-800 rounded-xl mb-3" />
@@ -141,10 +140,7 @@ const OperatorDashboard = () => {
 
               <div className="grid md:grid-cols-3 gap-5 mt-6">
                 {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white dark:bg-gray-900/70 dark:backdrop-blur-xl rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 p-6"
-                  >
+                  <div key={i} className="bg-white dark:bg-gray-900/70 dark:backdrop-blur-xl rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 p-6">
                     <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-slate-800 mb-4" />
                     <div className="h-7 w-16 bg-slate-200 dark:bg-slate-800 rounded-lg mb-2" />
                     <div className="h-3 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg" />
@@ -159,10 +155,7 @@ const OperatorDashboard = () => {
               </div>
               <div className="p-4 space-y-4">
                 {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="h-20 bg-slate-100 dark:bg-slate-900 rounded-2xl"
-                  />
+                  <div key={i} className="h-20 bg-slate-100 dark:bg-slate-900 rounded-2xl" />
                 ))}
               </div>
               <div className="p-4">
@@ -194,12 +187,8 @@ const OperatorDashboard = () => {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-white">
-              Operator Dashboard
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">
-              Manage live queue efficiently
-            </p>
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Operator Dashboard</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">Manage live queue efficiently</p>
           </div>
           <div className="flex flex-col items-end gap-2 mt-4 lg:mt-0">
             <LiveClock />
@@ -221,44 +210,26 @@ const OperatorDashboard = () => {
                       <h1 className="text-7xl md:text-8xl font-black bg-linear-to-r from-indigo-500 to-violet-600 bg-clip-text text-transparent tracking-widest mt-6">
                         {currentToken.token}
                       </h1>
-                      <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mt-4">
-                        {currentToken.name}
-                      </h2>
-                      <p className="text-slate-500 dark:text-slate-400 mt-2">
-                        {currentToken.service}
-                      </p>
+                      <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mt-4">{currentToken.name}</h2>
+                      <p className="text-slate-500 dark:text-slate-400 mt-2">{currentToken.service}</p>
                     </>
                   ) : (
                     <div className="flex flex-col items-start mt-8">
                       <div className="h-14 w-14 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center mb-4">
                         <FaUsers size={22} className="text-indigo-500" />
                       </div>
-                      <p className="text-slate-400 dark:text-slate-500 text-lg">
-                        No token currently serving
-                      </p>
+                      <p className="text-slate-400 dark:text-slate-500 text-lg">No token currently serving</p>
                     </div>
                   )}
 
                   <div className="flex gap-3 mt-8">
-                    <button
-                      onClick={handleCallNext}
-                      disabled={queue.length === 0}
-                      className="flex-1 border-2 border-green-500 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(34,197,94,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleCallNext} disabled={queue.length === 0} className="flex-1 border-2 border-green-500 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(34,197,94,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
                       Call Next
                     </button>
-                    <button
-                      onClick={handleSkip}
-                      disabled={!currentToken}
-                      className="flex-1 border-2 border-amber-500 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleSkip} disabled={!currentToken} className="flex-1 border-2 border-amber-500 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(245,158,11,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
                       Skip
                     </button>
-                    <button
-                      onClick={handleSkip}
-                      disabled={!currentToken}
-                      className="flex-1 border-2 border-red-500 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(239,68,68,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleSkip} disabled={!currentToken} className="flex-1 border-2 border-red-500 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl py-4 font-semibold hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(239,68,68,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
                       No Show
                     </button>
                   </div>
@@ -266,47 +237,24 @@ const OperatorDashboard = () => {
 
                 <div className="hidden md:flex justify-center">
                   <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4">
-                    <img
-                      src="/src/assets/Consulting-amico.png"
-                      alt="QueueLess"
-                      className="w-[320px] hover:scale-105 transition-all duration-500"
-                    />
+                    {/* 🟩 FIXED: Source parsed token variable reference directly */}
+                    <img src={logo} alt="QueueLess" className="w-[320px] hover:scale-105 transition-all duration-500" />
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-5 mt-6">
-              <StatsCard
-                title="People Waiting"
-                value={queue.length}
-                subtitle="Current Queue"
-                icon={<FaUsers size={22} />}
-                color="#6366F1"
-              />
-              <StatsCard
-                title="Average Wait"
-                value={`${queue.length * 5} min`}
-                subtitle="Estimated"
-                icon={<FaClock size={22} />}
-                color="#10B981"
-              />
-              <StatsCard
-                title="Served Today"
-                value={servedToday}
-                subtitle="Daily Count"
-                icon={<FaChartLine size={22} />}
-                color="#8B5CF6"
-              />
+              <StatsCard title="People Waiting" value={queue.length} subtitle="Current Queue" icon={<FaUsers size={22} />} color="#6366F1" />
+              <StatsCard title="Average Wait" value={`${queue.length * 5} min`} subtitle="Estimated" icon={<FaClock size={22} />} color="#10B981" />
+              <StatsCard title="Served Today" value={servedToday} subtitle="Daily Count" icon={<FaChartLine size={22} />} color="#8B5CF6" />
             </div>
           </div>
 
           <div className="bg-white dark:bg-[#07111f] border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200">
             <div className="p-6 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Upcoming Queue
-                </h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Upcoming Queue</h2>
                 <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                   {queue.length} Waiting
                 </span>
@@ -319,12 +267,8 @@ const OperatorDashboard = () => {
                   <div className="h-14 w-14 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center mb-4">
                     <FaUsers size={22} className="text-indigo-500" />
                   </div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
-                    Queue is empty
-                  </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                    New walk-ins will appear here.
-                  </p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">Queue is empty</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">New walk-ins will appear here.</p>
                 </div>
               ) : (
                 queue.map((item) => <QueueItem key={item.id} item={item} />)
@@ -332,10 +276,7 @@ const OperatorDashboard = () => {
             </div>
 
             <div className="p-4">
-              <button
-                onClick={handleAddWalkIn}
-                className="w-full bg-linear-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200"
-              >
+              <button onClick={handleAddWalkIn} className="w-full bg-linear-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200">
                 <FaPlus /> Add Walk-In
               </button>
             </div>
@@ -343,9 +284,7 @@ const OperatorDashboard = () => {
         </div>
 
         <div className="mt-10 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            QueueLess © 2026 • Smart Queue Management System
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">QueueLess © 2026 • Smart Queue Management System</p>
         </div>
       </div>
     </div>
