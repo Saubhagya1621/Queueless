@@ -44,6 +44,7 @@ function Navbar() {
     });
 
     socketRef.current = socket;
+    socket.emit("join-room", user.id);
 
     socket.on("token:called", (data) => {
       setNotifications((prev) => [

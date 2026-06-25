@@ -65,6 +65,10 @@ const callNext = async (req, res) => {
       tokenId: next._id,
       userId: next.userId,
     });
+    io.to(next.userId._id.toString()).emit("token:called", {
+      tokenId: next._id,
+      userId: next.userId,
+    });
 
     res.status(200).json({ message: "Next token called", token: next });
   } catch (error) {

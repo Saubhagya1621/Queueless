@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { getMyToken, cancelToken } from "../utils/api";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
+import useAuth from "../hooks/useAuth";
 
 function MyToken() {
   const [token, setToken] = useState(null);
@@ -10,6 +11,7 @@ function MyToken() {
   const [error, setError] = useState(null);
   const [cancelling, setCancelling] = useState(false);
   const socketRef = useRef(null);
+  const { user } = useAuth();
 
   const fetchToken = async () => {
     try {
@@ -47,7 +49,9 @@ function MyToken() {
         "join-room",
         currentToken.serviceCenterId?._id || currentToken.serviceCenterId,
       );
+      socket.emit("join-room", user?.id);
 
+      socket.emit("join-room", currentToken.userId?.toString() || currentToken.userId);
       socket.on("queue:updated", () => fetchToken());
 
       socket.on("token:called", ({ tokenId }) => {
