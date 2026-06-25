@@ -4,7 +4,7 @@ import LiveClock from "../components/LiveClock";
 import StatusBadge from "../components/StatusBadge";
 import StatsCard from "../components/StatsCard";
 import QueueItem from "../components/QueueItem";
-import logo from "../assets/Consulting-amico.png"; // 🟩 Asset import is already here
+import logo from "../assets/Consulting-amico.png";
 import {
   getQueueForCounter,
   callNextToken,
@@ -56,7 +56,10 @@ const OperatorDashboard = () => {
   }, [fetchQueue]);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:8000", {
+    // 🟩 Updated target backend endpoint with matching fallback transports for stability on Render
+    const socketUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "http://localhost:8000";
+    const socket = io(socketUrl, {
+      transports: ["polling", "websocket"],
       withCredentials: true,
     });
 
@@ -237,7 +240,6 @@ const OperatorDashboard = () => {
 
                 <div className="hidden md:flex justify-center">
                   <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4">
-                    {/* 🟩 FIXED: Source parsed token variable reference directly */}
                     <img src={logo} alt="QueueLess" className="w-[320px] hover:scale-105 transition-all duration-500" />
                   </div>
                 </div>
