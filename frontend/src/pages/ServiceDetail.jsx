@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { getServiceCenterById, joinQueue, getMyToken } from "../utils/api"; // Make sure getMyToken is imported
+// 🟩 FIXED: Added getMyToken to the import line below
+import { getServiceCenterById, joinQueue, getMyToken } from "../utils/api"; 
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import socket from "../socket/socket";
 
 function ServiceDetail() {
   const { id } = useParams();
@@ -24,18 +26,20 @@ function ServiceDetail() {
         // 2. Join the WebSocket room for real-time sync
         socket.emit("join-room", id);
 
-        // 3. Hydrate state on refresh: check if user already has an active token here
-        // Ensure 'getMyToken' is imported from your api.js utils file
-        const tokenRes = await getMyToken();
-        if (
-          tokenRes?.token &&
-          (tokenRes.token.serviceCenterId === id ||
-            tokenRes.token.serviceCenterId._id === id)
-        ) {
-          if (["waiting", "called"].includes(tokenRes.token.status)) {
-            setJoinedToken(tokenRes.token);
+        // 3. Look up if this user already has an active token here
+        // Wrapped in its own try/catch so if it fails/404s, it won't crash the page
+        try {
+          const tokenRes = await getMyToken(); 
+          if (tokenRes?.token) {
+            const centerId = tokenRes.token.serviceCenterId?._id || tokenRes.token.serviceCenterId;
+            if (centerId === id && ["waiting", "called"].includes(tokenRes.token.status)) {
+              setJoinedToken(tokenRes.token);
+            }
           }
+        } catch (tokenErr) {
+          console.log("No pre-existing token found for this user session.");
         }
+
       } catch (err) {
         setError("Failed to load service center");
       } finally {
@@ -65,7 +69,6 @@ function ServiceDetail() {
     setJoinError("");
     try {
       const response = await joinQueue(id, counterId);
-      // Clear loader states BEFORE committing the object data state switch
       setJoiningCounterId(null);
       setJoinedToken(response.token);
     } catch (err) {
@@ -117,7 +120,7 @@ function ServiceDetail() {
         </div>
 
         {/* Queue Status */}
-        <div className="bg-white dark:bg-gray-900/70 backdrop-blur-xl rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900/70 backdrop-blur-xl rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_10px_35px_rgba(0,0,0,0.12)] p-6 mb-6">
           <h2 className="text-base font-medium text-[#111827] dark:text-white mb-4">
             Current Queue Status
           </h2>
@@ -130,9 +133,7 @@ function ServiceDetail() {
             </div>
             <div>
               <p className="text-2xl font-semibold text-[#6366F1]">
-                {center.totalWaiting === 0
-                  ? "0 min"
-                  : `${center.totalWaiting * 5} min`}
+                {center.totalWaiting === 0 ? "0 min" : `${center.totalWaiting * 5} min`}
               </p>
               <p className="text-xs text-[#6B7280] mt-1">Estimated Wait</p>
             </div>
@@ -146,7 +147,7 @@ function ServiceDetail() {
         </div>
 
         {/* Counters */}
-        <div className="bg-white dark:bg-gray-900/70 backdrop-blur-xl rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900/70 backdrop-blur-xl rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_10px_35px_rgba(0,0,0,0.12)] p-6 mb-6">
           <h2 className="text-base font-medium text-[#111827] dark:text-white mb-4">
             Available Counters
           </h2>
@@ -159,7 +160,7 @@ function ServiceDetail() {
             {center.counters.map((counter) => (
               <div
                 key={counter._id}
-                className="flex items-center justify-between bg-white dark:bg-gray-900/70 backdrop-blur-xl border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200"
+                className="flex items-center justify-between bg-white dark:bg-gray-900/70 backdrop-blur-xl border border-gray-100 dark:border-gray-800 rounded-2xl p-4"
               >
                 <div>
                   <p className="font-medium text-[#111827] dark:text-white">
@@ -191,8 +192,8 @@ function ServiceDetail() {
                   {joiningCounterId === counter._id
                     ? "Joining..."
                     : !!joinedToken
-                      ? "Joined"
-                      : "Join Queue"}
+                    ? "Joined"
+                    : "Join Queue"}
                 </button>
               </div>
             ))}
@@ -201,7 +202,7 @@ function ServiceDetail() {
 
         {/* Token Confirmation Card */}
         {joinedToken && (
-          <div className="bg-[#ECFDF5] dark:bg-gray-900/70 backdrop-blur-xl border border-[#10B981]/30 dark:border-gray-800 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200 p-5 text-center">
+          <div className="bg-[#ECFDF5] dark:bg-gray-900/70 backdrop-blur-xl border border-[#10B981]/30 dark:border-gray-800 rounded-2xl p-5 text-center">
             <p className="text-lg font-semibold text-[#111827] dark:text-white mb-3">
               ✅ You've joined the queue!
             </p>
@@ -213,14 +214,10 @@ function ServiceDetail() {
                 Your Token Number
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                Position:{" "}
-                <span className="font-semibold">{joinedToken.position}</span>
+                Position: <span className="font-semibold">{joinedToken.position}</span>
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                Estimated Wait:{" "}
-                <span className="font-semibold">
-                  {joinedToken.estimatedWait} min
-                </span>
+                Estimated Wait: <span className="font-semibold">{joinedToken.estimatedWait} min</span>
               </p>
             </div>
             <button
