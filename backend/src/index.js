@@ -42,8 +42,12 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
   
   socket.on('join-room', (roomId) => {
-    socket.join(roomId.toString()) // 🟩 Generic room joiner handles any ID string cleanly
-    console.log(`Socket ${socket.id} joined room ${roomId}`)
+    // 🟩 Extract string ID if object is sent, avoiding [object Object] serialization errors
+    const cleanedRoomId = roomId && typeof roomId === 'object' ? (roomId._id || roomId.id) : roomId;
+    if (cleanedRoomId) {
+      socket.join(cleanedRoomId.toString())
+      console.log(`Socket ${socket.id} joined room ${cleanedRoomId}`)
+    }
   })
   
   socket.on('disconnect', () => {
