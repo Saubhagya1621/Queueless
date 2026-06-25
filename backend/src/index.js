@@ -40,10 +40,12 @@ app.use('/api/v1/admin', adminRoutes)
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
-  socket.on('join-room', (serviceCenterId) => {
-    socket.join(serviceCenterId)
-    console.log(`Socket ${socket.id} joined room ${serviceCenterId}`)
+  
+  socket.on('join-room', (roomId) => {
+    socket.join(roomId.toString()) // 🟩 Generic room joiner handles any ID string cleanly
+    console.log(`Socket ${socket.id} joined room ${roomId}`)
   })
+  
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)
   })
