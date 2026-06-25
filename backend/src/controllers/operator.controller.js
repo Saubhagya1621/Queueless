@@ -34,10 +34,8 @@ const callNext = async (req, res) => {
     if (current) {
       current.status = "served";
       await current.save();
-      // ❌ Old update
-      // 🟩 New safe update
       await ServiceCenter.findOneAndUpdate(
-        { "counters._id": counterId, totalWaiting: { $gt: 0 } }, // Protect the lower bound
+        { "counters._id": counterId, totalWaiting: { $gt: 0 } },
         { $inc: { totalWaiting: -1 } },
       );
     }
@@ -45,36 +43,45 @@ const callNext = async (req, res) => {
     const next = await Token.findOne({ counterId, status: "waiting" })
       .sort({ position: 1 })
       .populate("userId", "name email");
+
+    // 🟩 FIXED: Return 200 with success status false so Axios doesn't drop a 404 runtime error
     if (!next)
-      return res.status(404).json({ message: "No more tokens in queue" });
+      return res.status(200).json({ success: false, message: "No more tokens in queue" });
 
     next.status = "called";
     await next.save();
-    try {
-      await sendYourTurnEmail(
+
+    if (next.userId?.email) {
+      sendYourTurnEmail(
         next.userId.name,
         next.userId.email,
         next.tokenNumber,
         req.user.counterId,
         next.serviceCenterId,
-      );
-    } catch (error) {
-      console.log("Your turn email failed:", error.message);
+      ).catch((error) => console.log("Your turn email failed:", error.message));
     }
 
-    io.to(next.serviceCenterId.toString()).emit("queue:updated", { counterId });
-    io.to(next.serviceCenterId.toString()).emit("token:called", {
-      tokenId: next._id,
-      userId: next.userId,
-    });
-    io.to(next.userId._id.toString()).emit("token:called", {
-      tokenId: next._id,
-      userId: next.userId,
-    });
+    try {
+      if (io && typeof io.to === "function") {
+        io.to(next.serviceCenterId.toString()).emit("queue:updated", { counterId });
+        io.to(next.serviceCenterId.toString()).emit("token:called", {
+          tokenId: next._id,
+          userId: next.userId,
+        });
+        if (next.userId?._id) {
+          io.to(next.userId._id.toString()).emit("token:called", {
+            tokenId: next._id,
+            userId: next.userId,
+          });
+        }
+      }
+    } catch (socketError) {
+      console.log("Operator call socket emit error:", socketError.message);
+    }
 
-    res.status(200).json({ message: "Next token called", token: next });
+    return res.status(200).json({ success: true, message: "Next token called", token: next });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -86,14 +93,20 @@ const skipToken = async (req, res) => {
     token.status = "skipped";
     await token.save();
 
-    // 🟩 New safe update
     await ServiceCenter.findOneAndUpdate(
-      { "counters._id": token.counterId, totalWaiting: { $gt: 0 } }, // Protect the lower bound
+      { "counters._id": token.counterId, totalWaiting: { $gt: 0 } },
       { $inc: { totalWaiting: -1 } },
     );
-    io.to(token.serviceCenterId.toString()).emit("queue:updated", {
-      counterId: token.counterId,
-    });
+
+    try {
+      if (io && typeof io.to === "function") {
+        io.to(token.serviceCenterId.toString()).emit("queue:updated", {
+          counterId: token.counterId,
+        });
+      }
+    } catch (socketError) {
+      console.log("Skip socket emit error:", socketError.message);
+    }
 
     res.status(200).json({ message: "Token skipped" });
   } catch (error) {
@@ -124,17 +137,23 @@ const addWalkIn = async (req, res) => {
       userId: req.user.userId,
       serviceCenterId,
       counterId,
-      tokenNumber: counter.currentToken + 1,
+      tokenNumber: (counter.currentToken || 0) + 1,
       position: waitingCount + 1,
       estimatedWait: (waitingCount + 1) * 5,
       status: "waiting",
     });
 
-    counter.currentToken += 1;
+    counter.currentToken = (counter.currentToken || 0) + 1;
     center.totalWaiting += 1;
     await center.save();
 
-    io.to(serviceCenterId.toString()).emit("queue:updated", { counterId });
+    try {
+      if (io && typeof io.to === "function") {
+        io.to(serviceCenterId.toString()).emit("queue:updated", { counterId });
+      }
+    } catch (socketError) {
+      console.log("Walk in socket emit error:", socketError.message);
+    }
 
     res.status(201).json({ message: "Walk-in added successfully", token });
   } catch (error) {
