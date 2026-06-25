@@ -54,30 +54,40 @@ const joinQueue = async (req, res) => {
       userId,
       serviceCenterId,
       counterId,
-      tokenNumber: counter.currentToken + 1,
+      tokenNumber: (counter.currentToken || 0) + 1,
       position: waitingCount + 1,
       estimatedWait: (waitingCount + 1) * 5,
     });
+
     const user = await User.findById(userId).select("name email");
-    try {
-      await sendTokenConfirmationEmail(
+
+    // 🟩 Run email asynchronously without blocking the execution chain
+    if (user) {
+      sendTokenConfirmationEmail(
         user.name,
         user.email,
         token.tokenNumber,
         center.name,
-        token.estimatedWait,
-      );
-    } catch (error) {
-      console.log("Token confirmation email failed:", error.message);
+        token.estimatedWait
+      ).catch((err) => console.log("Email background error:", err.message));
     }
 
-    counter.currentToken += 1;
+    counter.currentToken = (counter.currentToken || 0) + 1;
     center.totalWaiting += 1;
     await center.save();
-    io.to(serviceCenterId.toString()).emit("queue:updated", { counterId });
-    res.status(201).json({ message: "Joined queue successfully", token });
+
+    // 🟩 Run socket emit safely inside a try/catch block so it never blocks the HTTP response
+    try {
+      if (io && typeof io.to === "function") {
+        io.to(serviceCenterId.toString()).emit("queue:updated", { counterId });
+      }
+    } catch (socketError) {
+      console.log("Socket notification failed:", socketError.message);
+    }
+
+    return res.status(201).json({ message: "Joined queue successfully", token });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -107,14 +117,21 @@ const cancelToken = async (req, res) => {
     token.status = "cancelled";
     await token.save();
 
-    // 🟩 New safe decrement (only decreases if totalWaiting is greater than 0)
     await ServiceCenter.findOneAndUpdate(
       { _id: token.serviceCenterId, totalWaiting: { $gt: 0 } },
       { $inc: { totalWaiting: -1 } },
     );
-    io.to(token.serviceCenterId.toString()).emit("queue:updated", {
-      counterId: token.counterId,
-    });
+
+    try {
+      if (io && typeof io.to === "function") {
+        io.to(token.serviceCenterId.toString()).emit("queue:updated", {
+          counterId: token.counterId,
+        });
+      }
+    } catch (socketError) {
+      console.log("Cancel token socket emission failed:", socketError.message);
+    }
+
     res.status(200).json({ message: "Token cancelled successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
