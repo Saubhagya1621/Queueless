@@ -10,6 +10,8 @@ import MyToken from "./pages/MyToken";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import AdminOverview from "./pages/AdminOverview";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./pages/NotFound";
+import ContactUs from "./pages/ContactUs";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route
           path="/my-token"
           element={

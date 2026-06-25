@@ -33,7 +33,7 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 transition-colors duration-300">
-      <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+      <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-800 p-8">
         <div className="flex items-center gap-2 mb-8">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">Q</span>
@@ -101,6 +101,8 @@ function Register() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
+              minLength={10}
+              maxLength={10}
               className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
           </div>
@@ -115,8 +117,26 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
               className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
+            <p
+              className={`text-xs mt-1 ${
+                password.length < 6
+                  ? "text-red-500"
+                  : password.length < 10
+                    ? "text-yellow-500"
+                    : "text-green-500"
+              }`}
+            >
+              {password.length === 0
+                ? ""
+                : password.length < 6
+                  ? "Weak Password"
+                  : password.length < 10
+                    ? "Medium Password"
+                    : "Strong Password"}
+            </p>
           </div>
 
           <button
