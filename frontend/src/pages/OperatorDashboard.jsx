@@ -218,7 +218,7 @@ const OperatorDashboard = () => {
 
                   {currentToken ? (
                     <>
-                      <h1 className="text-7xl md:text-8xl font-black bg-gradient-to-r from-indigo-500 to-violet-600 bg-clip-text text-transparent tracking-widest mt-6">
+                      <h1 className="text-7xl md:text-8xl font-black bg-linear-to-r from-indigo-500 to-violet-600 bg-clip-text text-transparent tracking-widest mt-6">
                         {currentToken.token}
                       </h1>
                       <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mt-4">
@@ -334,7 +334,7 @@ const OperatorDashboard = () => {
             <div className="p-4">
               <button
                 onClick={handleAddWalkIn}
-                className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200"
+                className="w-full bg-linear-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200"
               >
                 <FaPlus /> Add Walk-In
               </button>
