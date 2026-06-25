@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
-import socket from "../socket"; // 👈 Import your unified socket config file
+// 🟩 Correct folder navigation path
+import socket from "../socket/socket";// 👈 Import your unified socket config file
 
 function Navbar() {
   const { user, logout } = useAuth();
