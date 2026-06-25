@@ -63,18 +63,25 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-10 transition-colors duration-300">
-      <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 relative overflow-hidden transition-colors duration-300">
+
+      {/* Blobs */}
+      <div className="absolute -top-20 -left-20 w-80 h-80 bg-indigo-400/30 dark:bg-indigo-700/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-violet-400/30 dark:bg-violet-700/30 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Card */}
+      <div className="glass-card w-full max-w-md p-8 relative z-10">
 
         {/* Logo */}
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/30">
             <span className="text-white font-bold text-sm">Q</span>
           </div>
           <span className="text-xl font-semibold text-gray-800 dark:text-white">
             Queue<span className="text-indigo-500">Less</span>
           </span>
         </div>
+
         <Link
           to="/"
           className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-500 transition-colors mb-6"
@@ -85,7 +92,7 @@ function Login() {
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-1">Welcome back</h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Login to manage your queue</p>
 
-        {/* Quick fill — operator/admin only */}
+        {/* Quick fill */}
         <div className="flex gap-2 mb-4">
           {['operator', 'admin'].map((role) => (
             <button
@@ -110,17 +117,18 @@ function Login() {
 
         {/* Credentials card */}
         {showCreds && (
-          <div className="mb-6 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-4">
+          <div className="mb-6 rounded-xl border border-white/30 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-4">
             <div className="flex gap-2 mb-3">
               {['operator', 'admin'].map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-all capitalize ${activeTab === tab
-                      ? 'bg-indigo-500 text-white'
+                  className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-all capitalize ${
+                    activeTab === tab
+                      ? 'bg-linear-to-r from-indigo-500 to-violet-600 text-white'
                       : 'text-gray-500 dark:text-gray-400 hover:text-indigo-500'
-                    }`}
+                  }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
@@ -150,7 +158,7 @@ function Login() {
         )}
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-lg mb-4">
+          <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-xl mb-4 border border-red-100 dark:border-red-800/30">
             {error}
           </div>
         )}
@@ -164,7 +172,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+              className="border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 focus:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
           </div>
 
@@ -176,14 +184,14 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+              className="border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 focus:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-indigo-500 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-600 transition-all duration-200 mt-2 disabled:opacity-60"
+            className="glow-btn text-white font-medium py-2.5 rounded-xl transition-all duration-200 mt-2 disabled:opacity-60"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>

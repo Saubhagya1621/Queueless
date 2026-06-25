@@ -1,6 +1,8 @@
 import { io } from "../index.js";
 import ServiceCenter from "../models/serviceCenter.model.js";
 import Token from "../models/token.model.js";
+import { sendTokenConfirmationEmail } from "../utils/mailer.js";
+import User from "../models/user.model.js";
 
 const getAllServiceCenters = async (req, res) => {
   try {
@@ -56,6 +58,18 @@ const joinQueue = async (req, res) => {
       position: waitingCount + 1,
       estimatedWait: (waitingCount + 1) * 5,
     });
+    const user = await User.findById(userId).select("name email");
+    try {
+      await sendTokenConfirmationEmail(
+        user.name,
+        user.email,
+        token.tokenNumber,
+        center.name,
+        token.estimatedWait,
+      );
+    } catch (error) {
+      console.log("Token confirmation email failed:", error.message);
+    }
 
     counter.currentToken += 1;
     center.totalWaiting += 1;

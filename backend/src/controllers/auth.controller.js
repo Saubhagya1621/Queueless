@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
+import { sendWelcomeEmail } from "../utils/mailer.js";
 
 const registerUser = async (req, res) => {
   try {
@@ -10,6 +11,11 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
 
     const user = await User.create({ name, email, phone, password });
+    try {
+      await sendWelcomeEmail(user.name, user.email);
+    } catch (error) {
+      console.log("Welcome email failed:", error.message);
+    }
 
     const token = generateToken(
       user._id,
