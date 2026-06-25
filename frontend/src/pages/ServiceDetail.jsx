@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getServiceCenterById, joinQueue } from "../utils/api";
+import { getServiceCenterById, joinQueue, getMyToken } from "../utils/api"; // Make sure getMyToken is imported
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
@@ -15,17 +15,30 @@ function ServiceDetail() {
   const [joinedToken, setJoinedToken] = useState(null);
 
   useEffect(() => {
-    const fetchCenter = async () => {
+    const fetchCenterAndActiveToken = async () => {
       try {
+        // 1. Fetch center details
         const data = await getServiceCenterById(id);
         setCenter(data.center);
+
+        // 2. Check if user already has an active token for this center
+        try {
+          const tokenRes = await getMyToken();
+          if (tokenRes?.token && tokenRes.token.serviceCenterId._id === id) {
+            setJoinedToken(tokenRes.token);
+          }
+        } catch (tokenErr) {
+          // No active token found, fail silently as it's normal for a non-joined user
+          console.log("No pre-existing active token session.");
+        }
+
       } catch (err) {
         setError("Failed to load service center");
       } finally {
         setLoading(false);
       }
     };
-    fetchCenter();
+    fetchCenterAndActiveToken();
   }, [id]);
 
   const handleJoinQueue = async (counterId) => {
@@ -33,10 +46,11 @@ function ServiceDetail() {
     setJoinError("");
     try {
       const response = await joinQueue(id, counterId);
+      // Clear loader states BEFORE committing the object data state switch
+      setJoiningCounterId(null);
       setJoinedToken(response.token);
     } catch (err) {
       setJoinError(err?.response?.data?.message || "Failed to join queue");
-    } finally {
       setJoiningCounterId(null);
     }
   };
@@ -157,6 +171,8 @@ function ServiceDetail() {
                 >
                   {joiningCounterId === counter._id
                     ? "Joining..."
+                    : !!joinedToken
+                    ? "Joined"
                     : "Join Queue"}
                 </button>
               </div>
@@ -164,7 +180,7 @@ function ServiceDetail() {
           </div>
         </div>
 
-        {/* Token Confirmation */}
+        {/* Token Confirmation Card */}
         {joinedToken && (
           <div className="bg-[#ECFDF5] dark:bg-gray-900/70 backdrop-blur-xl border border-[#10B981]/30 dark:border-gray-800 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(37,99,235,0.25)] transition-all duration-200 p-5 text-center">
             <p className="text-lg font-semibold text-[#111827] dark:text-white mb-3">

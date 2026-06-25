@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
-import { io } from "socket.io-client";
+import socket from "../socket"; // 👈 Import your unified socket config file
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -39,36 +39,49 @@ function Navbar() {
   useEffect(() => {
     if (!user) return;
 
-    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:8000", {
-      withCredentials: true,
-    });
+    // Connect safely if not already connected
+    if (!socket.connected) {
+      socket.connect();
+    }
 
-    socketRef.current = socket;
-    socket.emit("join-room", user.id);
+    // Join the user's personal communication channel
+    socket.emit("join-room", user.userId || user.id || user._id);
 
+    // Listen for the live call event
     socket.on("token:called", (data) => {
       setNotifications((prev) => [
         {
           id: Date.now(),
           message: "Your token is being called 🔔",
-          time: new Date().toLocaleTimeString(),
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
         ...prev,
       ]);
     });
 
+    // Listen for the queue updates
     socket.on("queue:updated", () => {
       setNotifications((prev) => [
         {
           id: Date.now(),
-          message: "Queue updated",
-          time: new Date().toLocaleTimeString(),
+          message: "Queue status updated 📈",
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
         ...prev,
       ]);
     });
 
-    return () => socket.disconnect();
+    // Cleanup events on component unmount
+    return () => {
+      socket.off("token:called");
+      socket.off("queue:updated");
+    };
   }, [user]);
 
   const handleLogout = () => {
