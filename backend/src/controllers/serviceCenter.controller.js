@@ -107,9 +107,11 @@ const cancelToken = async (req, res) => {
     token.status = "cancelled";
     await token.save();
 
-    await ServiceCenter.findByIdAndUpdate(token.serviceCenterId, {
-      $inc: { totalWaiting: -1 },
-    });
+    // 🟩 New safe decrement (only decreases if totalWaiting is greater than 0)
+    await ServiceCenter.findOneAndUpdate(
+      { _id: token.serviceCenterId, totalWaiting: { $gt: 0 } },
+      { $inc: { totalWaiting: -1 } },
+    );
     io.to(token.serviceCenterId.toString()).emit("queue:updated", {
       counterId: token.counterId,
     });

@@ -34,8 +34,10 @@ const callNext = async (req, res) => {
     if (current) {
       current.status = "served";
       await current.save();
+      // ❌ Old update
+      // 🟩 New safe update
       await ServiceCenter.findOneAndUpdate(
-        { "counters._id": counterId },
+        { "counters._id": counterId, totalWaiting: { $gt: 0 } }, // Protect the lower bound
         { $inc: { totalWaiting: -1 } },
       );
     }
@@ -84,11 +86,11 @@ const skipToken = async (req, res) => {
     token.status = "skipped";
     await token.save();
 
+    // 🟩 New safe update
     await ServiceCenter.findOneAndUpdate(
-      { "counters._id": token.counterId },
+      { "counters._id": token.counterId, totalWaiting: { $gt: 0 } }, // Protect the lower bound
       { $inc: { totalWaiting: -1 } },
     );
-
     io.to(token.serviceCenterId.toString()).emit("queue:updated", {
       counterId: token.counterId,
     });
