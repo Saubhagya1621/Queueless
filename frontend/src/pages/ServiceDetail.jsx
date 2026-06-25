@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 // 🟩 FIXED: Added getMyToken to the import line below
-import { getServiceCenterById, joinQueue, getMyToken } from "../utils/api"; 
+import { getServiceCenterById, joinQueue, getMyToken } from "../utils/api";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import socket from "../socket/socket";
@@ -29,17 +29,21 @@ function ServiceDetail() {
         // 3. Look up if this user already has an active token here
         // Wrapped in its own try/catch so if it fails/404s, it won't crash the page
         try {
-          const tokenRes = await getMyToken(); 
+          const tokenRes = await getMyToken();
           if (tokenRes?.token) {
-            const centerId = tokenRes.token.serviceCenterId?._id || tokenRes.token.serviceCenterId;
-            if (centerId === id && ["waiting", "called"].includes(tokenRes.token.status)) {
+            const centerId =
+              tokenRes.token.serviceCenterId?._id ||
+              tokenRes.token.serviceCenterId;
+            if (
+              centerId === id &&
+              ["waiting", "called"].includes(tokenRes.token.status)
+            ) {
               setJoinedToken(tokenRes.token);
             }
           }
         } catch (tokenErr) {
           console.log("No pre-existing token found for this user session.");
         }
-
       } catch (err) {
         setError("Failed to load service center");
       } finally {
@@ -69,8 +73,17 @@ function ServiceDetail() {
     setJoinError("");
     try {
       const response = await joinQueue(id, counterId);
+
+      // 🟩 Normalize the token structure instantly so frontend matches backend population
+      const normalizedToken = {
+        ...response.token,
+        serviceCenterId: response.token.serviceCenterId?._id
+          ? response.token.serviceCenterId
+          : { _id: response.token.serviceCenterId || id },
+      };
+
       setJoiningCounterId(null);
-      setJoinedToken(response.token);
+      setJoinedToken(normalizedToken);
     } catch (err) {
       setJoinError(err?.response?.data?.message || "Failed to join queue");
       setJoiningCounterId(null);
@@ -133,7 +146,9 @@ function ServiceDetail() {
             </div>
             <div>
               <p className="text-2xl font-semibold text-[#6366F1]">
-                {center.totalWaiting === 0 ? "0 min" : `${center.totalWaiting * 5} min`}
+                {center.totalWaiting === 0
+                  ? "0 min"
+                  : `${center.totalWaiting * 5} min`}
               </p>
               <p className="text-xs text-[#6B7280] mt-1">Estimated Wait</p>
             </div>
@@ -192,8 +207,8 @@ function ServiceDetail() {
                   {joiningCounterId === counter._id
                     ? "Joining..."
                     : !!joinedToken
-                    ? "Joined"
-                    : "Join Queue"}
+                      ? "Joined"
+                      : "Join Queue"}
                 </button>
               </div>
             ))}
@@ -214,10 +229,14 @@ function ServiceDetail() {
                 Your Token Number
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                Position: <span className="font-semibold">{joinedToken.position}</span>
+                Position:{" "}
+                <span className="font-semibold">{joinedToken.position}</span>
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                Estimated Wait: <span className="font-semibold">{joinedToken.estimatedWait} min</span>
+                Estimated Wait:{" "}
+                <span className="font-semibold">
+                  {joinedToken.estimatedWait} min
+                </span>
               </p>
             </div>
             <button
