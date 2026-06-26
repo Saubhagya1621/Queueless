@@ -1,12 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => new Resend(process.env.RESEND_API_KEY);
 
-const FROM = `QueueLess <${process.env.FROM_EMAIL || "onboarding@resend.dev"}>`;
+const FROM = () => `QueueLess <${process.env.FROM_EMAIL || "onboarding@resend.dev"}>`;
 
 export const sendWelcomeEmail = async (name, email) => {
-  const result = await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to: email,
     subject: "Welcome to QueueLess 🎉",
     html: `<h2>Welcome, ${name}!</h2>
@@ -22,8 +22,8 @@ export const sendTokenConfirmationEmail = async (
   centerName,
   estimatedWait,
 ) => {
-  await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to: email,
     subject: "Token Confirmed 🎫",
     html: `<h2>Hello ${name},</h2>
@@ -42,8 +42,8 @@ export const sendYourTurnEmail = async (
   counterName,
   centerName,
 ) => {
-  await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to: email,
     subject: "It's Your Turn! 🔔",
     html: `<h2>Hello ${name},</h2>
