@@ -1,5 +1,3 @@
-import fetch from "node:fetch";
-
 const FROM = { email: "noreply@queueless.in", name: "QueueLess" };
 
 const sendEmail = async (to, subject, htmlContent) => {
