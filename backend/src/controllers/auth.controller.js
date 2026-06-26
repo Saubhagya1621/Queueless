@@ -14,7 +14,7 @@ const registerUser = async (req, res) => {
     try {
       await sendWelcomeEmail(user.name, user.email);
     } catch (error) {
-      console.log("Welcome email failed:", error.message);
+      console.log("Welcome email failed:", error.message, error);
     }
 
     const token = generateToken(
