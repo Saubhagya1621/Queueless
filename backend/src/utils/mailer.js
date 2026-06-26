@@ -1,4 +1,4 @@
-import SibApiV3Sdk from "@getbrevo/brevo";
+import * as SibApiV3Sdk from "@getbrevo/brevo";
 
 const getClient = () => {
   const client = new SibApiV3Sdk.TransactionalEmailsApi();
