@@ -1,7 +1,7 @@
-import * as Brevo from "@getbrevo/brevo";
+import SibApiV3Sdk from "@getbrevo/brevo";
 
 const getClient = () => {
-  const client = new Brevo.TransactionalEmailsApi();
+  const client = new SibApiV3Sdk.TransactionalEmailsApi();
   client.authentications["apiKey"].apiKey = process.env.BREVO_API_KEY;
   return client;
 };
@@ -10,7 +10,7 @@ const FROM = { email: "noreply@queueless.in", name: "QueueLess" };
 
 export const sendWelcomeEmail = async (name, email) => {
   const client = getClient();
-  const mail = new Brevo.SendSmtpEmail();
+  const mail = new SibApiV3Sdk.SendSmtpEmail();
   mail.to = [{ email }];
   mail.sender = FROM;
   mail.subject = "Welcome to QueueLess 🎉";
@@ -24,7 +24,7 @@ export const sendTokenConfirmationEmail = async (
   name, email, tokenNumber, centerName, estimatedWait
 ) => {
   const client = getClient();
-  const mail = new Brevo.SendSmtpEmail();
+  const mail = new SibApiV3Sdk.SendSmtpEmail();
   mail.to = [{ email }];
   mail.sender = FROM;
   mail.subject = "Token Confirmed 🎫";
@@ -41,7 +41,7 @@ export const sendYourTurnEmail = async (
   name, email, tokenNumber, counterName, centerName
 ) => {
   const client = getClient();
-  const mail = new Brevo.SendSmtpEmail();
+  const mail = new SibApiV3Sdk.SendSmtpEmail();
   mail.to = [{ email }];
   mail.sender = FROM;
   mail.subject = "It's Your Turn! 🔔";
