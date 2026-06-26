@@ -1,58 +1,57 @@
-import { Resend } from "resend";
+import * as Brevo from "@getbrevo/brevo";
 
-const getResend = () => new Resend(process.env.RESEND_API_KEY);
+const getClient = () => {
+  const client = new Brevo.TransactionalEmailsApi();
+  client.authentications["apiKey"].apiKey = process.env.BREVO_API_KEY;
+  return client;
+};
 
-const FROM = () => `QueueLess <${process.env.FROM_EMAIL || "onboarding@resend.dev"}>`;
+const FROM = { email: "noreply@queueless.in", name: "QueueLess" };
 
 export const sendWelcomeEmail = async (name, email) => {
-  await getResend().emails.send({
-    from: FROM(),
-    to: email,
-    subject: "Welcome to QueueLess 🎉",
-    html: `<h2>Welcome, ${name}!</h2>
-           <p>Your QueueLess account has been created successfully.</p>
-           <p>Skip the queues. Save your time.</p>`,
-  });
+  const client = getClient();
+  const mail = new Brevo.SendSmtpEmail();
+  mail.to = [{ email }];
+  mail.sender = FROM;
+  mail.subject = "Welcome to QueueLess 🎉";
+  mail.htmlContent = `<h2>Welcome, ${name}!</h2>
+    <p>Your QueueLess account has been created successfully.</p>
+    <p>Skip the queues. Save your time.</p>`;
+  await client.sendTransacEmail(mail);
 };
 
 export const sendTokenConfirmationEmail = async (
-  name,
-  email,
-  tokenNumber,
-  centerName,
-  estimatedWait,
+  name, email, tokenNumber, centerName, estimatedWait
 ) => {
-  await getResend().emails.send({
-    from: FROM(),
-    to: email,
-    subject: "Token Confirmed 🎫",
-    html: `<h2>Hello ${name},</h2>
-           <ul>
-             <li><strong>Token:</strong> #${tokenNumber}</li>
-             <li><strong>Center:</strong> ${centerName}</li>
-             <li><strong>Estimated Wait:</strong> ${estimatedWait} min</li>
-           </ul>`,
-  });
+  const client = getClient();
+  const mail = new Brevo.SendSmtpEmail();
+  mail.to = [{ email }];
+  mail.sender = FROM;
+  mail.subject = "Token Confirmed 🎫";
+  mail.htmlContent = `<h2>Hello ${name},</h2>
+    <ul>
+      <li><strong>Token:</strong> #${tokenNumber}</li>
+      <li><strong>Center:</strong> ${centerName}</li>
+      <li><strong>Estimated Wait:</strong> ${estimatedWait} min</li>
+    </ul>`;
+  await client.sendTransacEmail(mail);
 };
 
 export const sendYourTurnEmail = async (
-  name,
-  email,
-  tokenNumber,
-  counterName,
-  centerName,
+  name, email, tokenNumber, counterName, centerName
 ) => {
-  await getResend().emails.send({
-    from: FROM(),
-    to: email,
-    subject: "It's Your Turn! 🔔",
-    html: `<h2>Hello ${name},</h2>
-           <p>Your token is now being called.</p>
-           <ul>
-             <li><strong>Token:</strong> #${tokenNumber}</li>
-             <li><strong>Counter:</strong> ${counterName}</li>
-             <li><strong>Center:</strong> ${centerName}</li>
-           </ul>
-           <p>Please proceed immediately.</p>`,
-  });
+  const client = getClient();
+  const mail = new Brevo.SendSmtpEmail();
+  mail.to = [{ email }];
+  mail.sender = FROM;
+  mail.subject = "It's Your Turn! 🔔";
+  mail.htmlContent = `<h2>Hello ${name},</h2>
+    <p>Your token is now being called.</p>
+    <ul>
+      <li><strong>Token:</strong> #${tokenNumber}</li>
+      <li><strong>Counter:</strong> ${counterName}</li>
+      <li><strong>Center:</strong> ${centerName}</li>
+    </ul>
+    <p>Please proceed immediately.</p>`;
+  await client.sendTransacEmail(mail);
 };
