@@ -2,7 +2,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 * {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
+}
+html,
+body,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+img {
+  max-width: 100%;
+  display: block;
 }
 
 /* ── Premium Light Background ── */
@@ -18,8 +28,7 @@ body {
 .dark body {
   background:
     radial-gradient(circle at top, #1d4ed8 0%, transparent 30%),
-    radial-gradient(circle at bottom, #7c3aed 0%, transparent 25%),
-    #020617;
+    radial-gradient(circle at bottom, #7c3aed 0%, transparent 25%), #020617;
   min-height: 100vh;
 }
 
@@ -67,8 +76,13 @@ body {
 
 /* ── Floating Animation ── */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 .animate-float {
@@ -77,8 +91,13 @@ body {
 
 /* ── Pulse Glow ── */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
-  50%       { box-shadow: 0 0 30px rgba(99, 102, 241, 0.7); }
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.7);
+  }
 }
 
 .animate-pulse-glow {

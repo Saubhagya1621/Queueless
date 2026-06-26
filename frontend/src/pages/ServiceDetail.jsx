@@ -200,13 +200,13 @@ function ServiceDetail() {
                   disabled={
                     counter.status !== "open" ||
                     joiningCounterId === counter._id ||
-                    !!joinedToken
+                    joinedToken?.counterId === counter._id
                   }
                   className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {joiningCounterId === counter._id
                     ? "Joining..."
-                    : !!joinedToken
+                    : joinedToken?.counterId === counter._id
                       ? "Joined"
                       : "Join Queue"}
                 </button>

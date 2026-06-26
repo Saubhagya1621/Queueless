@@ -32,8 +32,12 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 transition-colors duration-300">
-      <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-800 p-8">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden transition-colors duration-300">
+      {/* Background Blobs */}
+      <div className="absolute -top-20 -left-20 w-80 h-80 bg-indigo-400/30 dark:bg-indigo-700/30 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-violet-400/30 dark:bg-violet-700/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="glass-card w-full max-w-lg p-8">
         <div className="flex items-center gap-2 mb-8">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">Q</span>

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
-import socket from "../socket/socket"; 
+import socket from "../socket/socket";
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -14,6 +14,8 @@ function Navbar() {
   const dropdownRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -21,19 +23,35 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setNotifOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+ useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(e.target)
+    ) {
+      setDropdownOpen(false);
+    }
 
+    if (
+      notifRef.current &&
+      !notifRef.current.contains(e.target)
+    ) {
+      setNotifOpen(false);
+    }
+
+    if (
+      mobileMenuRef.current &&
+      !mobileMenuRef.current.contains(e.target)
+    ) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () =>
+    document.removeEventListener("mousedown", handleClickOutside);
+}, []);
   useEffect(() => {
     if (!user) return;
 
@@ -52,7 +70,10 @@ function Navbar() {
         {
           id: Date.now(),
           message: "Your token is being called 🔔",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
         ...prev,
       ]);
@@ -63,7 +84,10 @@ function Navbar() {
         {
           id: Date.now(),
           message: "Queue status updated 📈",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
         ...prev,
       ]);
@@ -95,14 +119,17 @@ function Navbar() {
 
   return (
     <nav
-      className={`w-full px-10 py-4 flex items-center justify-between fixed top-0 left-0 z-50 transition-all duration-300 backdrop-blur-xl border-b ${
+      className={`w-full px-4 md:px-10 py-4 flex items-center justify-between fixed top-0 left-0 z-50 transition-all duration-300 backdrop-blur-xl border-b ${
         scrolled
           ? "bg-white/80 dark:bg-gray-900/80 border-white/20 dark:border-white/10 shadow-lg shadow-indigo-500/5"
           : "bg-white/70 dark:bg-gray-900/70 border-white/10 dark:border-white/5"
       }`}
     >
       {/* Logo */}
-      <Link to={user ? getDashboardLink() : "/"} className="flex items-center gap-2">
+      <Link
+        to={user ? getDashboardLink() : "/"}
+        className="flex items-center gap-2"
+      >
         <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/30">
           <span className="text-white font-bold text-sm">Q</span>
         </div>
@@ -112,33 +139,49 @@ function Navbar() {
       </Link>
 
       {/* Right Side */}
-      <div className="flex items-center gap-3">
+      <div className="hidden md:flex items-center gap-3">
         <button
           onClick={toggleTheme}
           className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
         >
-          {isDark ? <span className="text-base">☀️</span> : <span className="text-base">🌙</span>}
+          {isDark ? (
+            <span className="text-base">☀️</span>
+          ) : (
+            <span className="text-base">🌙</span>
+          )}
         </button>
 
         {!user && (
           <>
-            <Link to="/login" className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+            <Link
+              to="/login"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+            >
               Login
             </Link>
-            <Link to="/register" className="text-sm text-white font-medium glow-btn px-5 py-2 rounded-lg transition-all duration-200">
+            <Link
+              to="/register"
+              className="text-sm text-white font-medium glow-btn px-5 py-2 rounded-lg transition-all duration-200"
+            >
               Get Started
             </Link>
           </>
         )}
 
         {user && (
-          <Link to={getDashboardLink()} className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+          <Link
+            to={getDashboardLink()}
+            className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+          >
             {getDashboardLabel()}
           </Link>
         )}
 
         {user?.role === "user" && (
-          <Link to="/my-token" className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+          <Link
+            to="/my-token"
+            className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+          >
             My Token
           </Link>
         )}
@@ -159,13 +202,20 @@ function Navbar() {
 
             {notifOpen && (
               <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50">
-                <div className="p-3 border-b text-sm font-medium">Notifications</div>
+                <div className="p-3 border-b text-sm font-medium">
+                  Notifications
+                </div>
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-sm text-gray-500">No notifications yet</div>
+                  <div className="p-4 text-sm text-gray-500">
+                    No notifications yet
+                  </div>
                 ) : (
                   <div className="max-h-60 overflow-y-auto">
                     {notifications.map((n) => (
-                      <div key={n.id} className="px-4 py-2 text-sm border-b border-gray-100 dark:border-gray-800">
+                      <div
+                        key={n.id}
+                        className="px-4 py-2 text-sm border-b border-gray-100 dark:border-gray-800"
+                      >
                         <p>{n.message}</p>
                         <p className="text-xs text-gray-400">{n.time}</p>
                       </div>
@@ -184,9 +234,13 @@ function Navbar() {
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
             >
               <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">{user.name?.charAt(0).toUpperCase()}</span>
+                <span className="text-white text-xs font-bold">
+                  {user.name?.charAt(0).toUpperCase()}
+                </span>
               </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{user.name}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                {user.name}
+              </span>
               <span className="text-xs text-gray-400">▾</span>
             </button>
 
@@ -194,10 +248,17 @@ function Navbar() {
               <div className="absolute right-0 mt-2 w-48 z-50 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl py-1">
                 <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                   <p className="text-xs text-gray-400">Signed in as</p>
-                  <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{user.name}</p>
-                  <p className="text-xs text-indigo-500 capitalize">{user.role}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-indigo-500 capitalize">
+                    {user.role}
+                  </p>
                 </div>
-                <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-150">
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-150"
+                >
                   Logout
                 </button>
               </div>
@@ -205,6 +266,80 @@ function Navbar() {
           </div>
         )}
       </div>
+      <div
+  className="flex md:hidden items-center gap-2"
+  ref={mobileMenuRef}
+>
+  <button
+    onClick={toggleTheme}
+    className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-gray-800"
+  >
+    {isDark ? "☀️" : "🌙"}
+  </button>
+
+  <button
+    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center gap-1 bg-gray-50 dark:bg-gray-800"
+  >
+    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+  </button>
+
+  {mobileMenuOpen && (
+    <div className="absolute top-full left-4 right-4 mt-3 rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700">
+
+      {!user && (
+        <>
+          <Link
+            to="/login"
+            onClick={() => setMobileMenuOpen(false)}
+             className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+          >
+            Login
+          </Link>
+
+          <Link
+            to="/register"
+            onClick={() => setMobileMenuOpen(false)}
+             className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+          >
+            Get Started
+          </Link>
+        </>
+      )}
+
+      {user && (
+        <>
+          <Link
+            to={getDashboardLink()}
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-5 py-3"
+          >
+            {getDashboardLabel()}
+          </Link>
+
+          {user.role === "user" && (
+            <Link
+              to="/my-token"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-5 py-3"
+            >
+              My Token
+            </Link>
+          )}
+
+          <button
+            onClick={handleLogout}
+            className="block w-full text-left px-5 py-3 text-red-500"
+          >
+            Logout
+          </button>
+        </>
+      )}
+    </div>
+  )}
+</div>
     </nav>
   );
 }
