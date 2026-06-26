@@ -1,3 +1,4 @@
+// frontend/src/pages/MyToken.jsx
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import { getMyToken, cancelToken } from "../utils/api";
@@ -39,9 +40,7 @@ function MyToken() {
 
       const socket = io(
         import.meta.env.VITE_API_URL || "http://localhost:8000",
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
       socketRef.current = socket;
 
@@ -50,8 +49,10 @@ function MyToken() {
         currentToken.serviceCenterId?._id || currentToken.serviceCenterId,
       );
       socket.emit("join-room", user?.id);
-
-      socket.emit("join-room", currentToken.userId?.toString() || currentToken.userId);
+      socket.emit(
+        "join-room",
+        currentToken.userId?.toString() || currentToken.userId,
+      );
       socket.on("queue:updated", () => fetchToken());
 
       socket.on("token:called", ({ tokenId }) => {
@@ -95,7 +96,7 @@ function MyToken() {
     return (
       <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-4 pt-28">
+        <main className="max-w-lg mx-auto px-4 pt-28">
           <div className="glass-card p-6">
             <div className="animate-pulse space-y-4">
               <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
@@ -112,27 +113,28 @@ function MyToken() {
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
 
-      <main className="max-w-2xl mx-auto px-4 pt-28 pb-12">
+      {/* max-w-lg instead of max-w-2xl to constrain card width on desktop */}
+      <main className="max-w-lg mx-auto px-4 pt-24 pb-10">
         {error && (
           <div className="mb-4 text-center text-sm text-red-500">{error}</div>
         )}
 
         {!token ? (
-          <div className="glass-card p-10 text-center">
-            <div className="text-6xl mb-4">🎫</div>
+          <div className="glass-card p-8 text-center">
+            <div className="text-5xl mb-3">🎫</div>
 
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
               No Active Token
             </h2>
 
-            <p className="mt-3 text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+            <p className="mt-2 text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm">
               You don't have an active queue right now. Browse available
               services and join instantly.
             </p>
 
             <button
               onClick={() => (window.location.href = "/home")}
-              className="glow-btn mt-6 px-6 py-3 rounded-xl text-white font-medium"
+              className="glow-btn mt-5 px-6 py-2.5 rounded-xl text-white font-medium"
             >
               Browse Services
             </button>
@@ -145,18 +147,19 @@ function MyToken() {
                 : ""
             }`}
           >
-            {/* Token Number */}
-            <div className="bg-linear-to-r from-indigo-500 to-violet-600 p-8 text-center">
-              <p className="text-indigo-100 mb-2">Your Token</p>
-
-              <h1 className="text-6xl font-bold text-white">
+            {/* Token Number — reduced from p-8 to p-5, text-6xl to text-5xl */}
+            <div className="bg-linear-to-r from-indigo-500 to-violet-600 p-5 text-center">
+              <p className="text-indigo-100 text-sm mb-1">Your Token</p>
+              <h1 className="text-5xl font-bold text-white">
                 #{token.tokenNumber}
               </h1>
             </div>
-            <div className="p-8">
+
+            {/* Body — reduced from p-8 to p-6 */}
+            <div className="p-6">
               {/* Details */}
-              <div className="space-y-4">
-                <div className="flex justify-between">
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
                     Service Center
                   </span>
@@ -164,7 +167,7 @@ function MyToken() {
                     {token.serviceCenterId?.name || "N/A"}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
                     Location
                   </span>
@@ -172,7 +175,7 @@ function MyToken() {
                     {token.serviceCenterId?.location || "N/A"}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
                     Position
                   </span>
@@ -180,7 +183,7 @@ function MyToken() {
                     {token.position} in line
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
                     Estimated Wait
                   </span>
@@ -188,7 +191,7 @@ function MyToken() {
                     ~{token.estimatedWait} min
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
                     Status
                   </span>
@@ -199,16 +202,16 @@ function MyToken() {
               </div>
 
               {/* Progress Bar */}
-              <div className="mt-8">
-                <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="mt-6">
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     Queue Progress
                   </span>
-                  <span className="text-sm text-indigo-500 font-medium">
+                  <span className="text-xs text-indigo-500 font-medium">
                     {getProgress(token.position)}%
                   </span>
                 </div>
-                <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-linear-to-r from-indigo-500 to-violet-600 rounded-full transition-all duration-1000 ease-out"
                     style={{ width: `${getProgress(token.position)}%` }}
@@ -217,9 +220,9 @@ function MyToken() {
               </div>
 
               {/* Status Badge */}
-              <div className="mt-6 flex justify-center">
+              <div className="mt-5 flex justify-center">
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${
                     token.status === "waiting"
                       ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                       : token.status === "called"
@@ -235,12 +238,11 @@ function MyToken() {
               <button
                 onClick={handleCancelToken}
                 disabled={cancelling || token.status === "called"}
-                className="mt-8 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-3 rounded-xl transition-all duration-200 hover:shadow-lg"
+                className="mt-6 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
               >
                 {cancelling ? "Cancelling..." : "Cancel Token"}
               </button>
             </div>
-            {/* p-8 wrapper */}
           </div>
         )}
       </main>

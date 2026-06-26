@@ -1,5 +1,5 @@
+import './env.js'
 import express from 'express'
-import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { createServer } from 'http'
@@ -11,7 +11,7 @@ import tokenRoutes from './routes/token.routes.js'
 import operatorRoutes from './routes/operator.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 
-dotenv.config()
+
 
 const app = express()
 app.set('trust proxy', 1)
