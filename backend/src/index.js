@@ -17,15 +17,19 @@ const app = express()
 app.set('trust proxy', 1)
 const httpServer = createServer(app)
 
+// CORS_ORIGIN can now be a comma-separated list, e.g.:
+// CORS_ORIGIN=http://localhost:5173,https://queueless-ruby.vercel.app
+const allowedOrigins = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+
 export const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: allowedOrigins,
     credentials: true
   }
 })
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: allowedOrigins,
   credentials: true
 }))
 

@@ -1,17 +1,21 @@
-// frontend/src/pages/MyToken.jsx
+
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import { getMyToken, cancelToken } from "../utils/api";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
+import { QRCodeCanvas } from "qrcode.react";
+import jsPDF from "jspdf";
 
 function MyToken() {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const socketRef = useRef(null);
+  const qrRef = useRef(null);
   const { user } = useAuth();
 
   const fetchToken = async () => {
@@ -92,6 +96,96 @@ function MyToken() {
     return Math.max(5, 30 - position * 3);
   };
 
+  const getQrValue = () => {
+    if (!token) return "";
+    const centerName = token.serviceCenterId?.name || "N/A";
+    return `Token:${token.tokenNumber}|Center:${centerName}`;
+  };
+
+  const handleDownloadReceipt = async () => {
+    if (!token) return;
+    setDownloading(true);
+    try {
+      const doc = new jsPDF({ unit: "pt", format: "a5" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 50;
+
+      doc.setFontSize(20);
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(79, 70, 229);
+      doc.text("QueueLess", pageWidth / 2, y, { align: "center" });
+
+      y += 20;
+      doc.setFontSize(11);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(100, 100, 100);
+      doc.text("Token Receipt", pageWidth / 2, y, { align: "center" });
+
+      y += 30;
+      doc.setDrawColor(220, 220, 220);
+      doc.line(40, y, pageWidth - 40, y);
+
+      y += 40;
+      doc.setFontSize(32);
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(30, 30, 30);
+      doc.text(`#${token.tokenNumber}`, pageWidth / 2, y, { align: "center" });
+
+      y += 35;
+      doc.setFontSize(11);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(60, 60, 60);
+
+      const rows = [
+        ["Service Center", token.serviceCenterId?.name || "N/A"],
+        ["Location", token.serviceCenterId?.location || "N/A"],
+        ["Position", `${token.position} in line`],
+        ["Status", token.status.charAt(0).toUpperCase() + token.status.slice(1)],
+      ];
+
+      const labelX = 60;
+      const valueX = pageWidth - 60;
+      rows.forEach(([label, value]) => {
+        doc.setTextColor(120, 120, 120);
+        doc.text(label, labelX, y);
+        doc.setTextColor(30, 30, 30);
+        doc.text(String(value), valueX, y, { align: "right" });
+        y += 22;
+      });
+
+      y += 15;
+      const canvas = qrRef.current?.querySelector("canvas");
+      if (canvas) {
+        const qrDataUrl = canvas.toDataURL("image/png");
+        const qrSize = 140;
+        doc.addImage(
+          qrDataUrl,
+          "PNG",
+          pageWidth / 2 - qrSize / 2,
+          y,
+          qrSize,
+          qrSize,
+        );
+        y += qrSize + 20;
+      }
+
+      doc.setFontSize(9);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        "Show this QR code at the service counter",
+        pageWidth / 2,
+        y,
+        { align: "center" },
+      );
+
+      doc.save(`QueueLess-Token-${token.tokenNumber}.pdf`);
+    } catch (err) {
+      toast.error("Could not generate receipt. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
@@ -113,7 +207,6 @@ function MyToken() {
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
 
-      {/* max-w-lg instead of max-w-2xl to constrain card width on desktop */}
       <main className="max-w-lg mx-auto px-4 pt-24 pb-10">
         {error && (
           <div className="mb-4 text-center text-sm text-red-500">{error}</div>
@@ -147,7 +240,6 @@ function MyToken() {
                 : ""
             }`}
           >
-            {/* Token Number — reduced from p-8 to p-5, text-6xl to text-5xl */}
             <div className="bg-linear-to-r from-indigo-500 to-violet-600 p-5 text-center">
               <p className="text-indigo-100 text-sm mb-1">Your Token</p>
               <h1 className="text-5xl font-bold text-white">
@@ -155,9 +247,16 @@ function MyToken() {
               </h1>
             </div>
 
-            {/* Body — reduced from p-8 to p-6 */}
             <div className="p-6">
-              {/* Details */}
+              <div className="flex justify-center mb-6">
+                <div
+                  ref={qrRef}
+                  className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm"
+                >
+                  <QRCodeCanvas value={getQrValue()} size={140} level="M" />
+                </div>
+              </div>
+
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
@@ -201,7 +300,6 @@ function MyToken() {
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div className="mt-6">
                 <div className="flex justify-between mb-1.5">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -219,7 +317,6 @@ function MyToken() {
                 </div>
               </div>
 
-              {/* Status Badge */}
               <div className="mt-5 flex justify-center">
                 <span
                   className={`px-3 py-1.5 rounded-full text-xs font-medium ${
@@ -234,11 +331,18 @@ function MyToken() {
                 </span>
               </div>
 
-              {/* Cancel Button */}
+              <button
+                onClick={handleDownloadReceipt}
+                disabled={downloading}
+                className="mt-6 w-full flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-xl transition-all duration-200 text-sm"
+              >
+                {downloading ? "Generating..." : "📄 Download Receipt (PDF)"}
+              </button>
+
               <button
                 onClick={handleCancelToken}
                 disabled={cancelling || token.status === "called"}
-                className="mt-6 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                className="mt-3 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
               >
                 {cancelling ? "Cancelling..." : "Cancel Token"}
               </button>

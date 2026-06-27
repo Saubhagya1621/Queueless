@@ -58,11 +58,10 @@ export const skipToken = async (tokenId) => {
   return response.data
 }
 
-export const addWalkIn = async () => {
-  const response = await axiosInstance.post('/operator/walk-in')
+export const addWalkIn = async (name) => {
+  const response = await axiosInstance.post('/operator/walk-in', { name })
   return response.data
 }
-
 // ADMIN
 export const getAdminOverview = async () => {
   const response = await axiosInstance.get('/admin/overview')

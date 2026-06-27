@@ -11,7 +11,7 @@ import {
   skipToken,
   addWalkIn,
 } from "../utils/api";
-import { FaUsers, FaClock, FaChartLine, FaPlus } from "react-icons/fa";
+import { FaUsers, FaClock, FaChartLine, FaPlus, FaTimes } from "react-icons/fa";
 import { io } from "socket.io-client";
 
 const formatToken = (num) => `A-${String(num).padStart(3, "0")}`;
@@ -19,7 +19,7 @@ const formatToken = (num) => `A-${String(num).padStart(3, "0")}`;
 const mapToken = (t, index) => ({
   id: t._id,
   token: formatToken(t.tokenNumber),
-  name: t.userId?.name || "Customer",
+  name: t.userId?.name || t.walkInName || "Customer",
   service: "General Service",
   eta: `${(index + 1) * 5} min`,
   color: index === 0 ? "green" : index === 1 ? "orange" : "red",
@@ -32,6 +32,11 @@ const OperatorDashboard = () => {
   const [servedToday, setServedToday] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [showWalkInModal, setShowWalkInModal] = useState(false);
+  const [walkInName, setWalkInName] = useState("");
+  const [walkInSubmitting, setWalkInSubmitting] = useState(false);
+  const [walkInError, setWalkInError] = useState("");
 
   const fetchQueue = useCallback(async () => {
     try {
@@ -56,7 +61,6 @@ const OperatorDashboard = () => {
   }, [fetchQueue]);
 
   useEffect(() => {
-    // 🟩 Updated target backend endpoint with matching fallback transports for stability on Render
     const socketUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "http://localhost:8000";
     const socket = io(socketUrl, {
       transports: ["polling", "websocket"],
@@ -95,12 +99,39 @@ const OperatorDashboard = () => {
     }
   };
 
-  const handleAddWalkIn = async () => {
+  const openWalkInModal = () => {
+    setWalkInName("");
+    setWalkInError("");
+    setShowWalkInModal(true);
+  };
+
+  const closeWalkInModal = () => {
+    if (walkInSubmitting) return;
+    setShowWalkInModal(false);
+    setWalkInName("");
+    setWalkInError("");
+  };
+
+  const handleSubmitWalkIn = async (e) => {
+    e.preventDefault();
+    const trimmed = walkInName.trim();
+    if (!trimmed) {
+      setWalkInError("Please enter a name");
+      return;
+    }
+
+    setWalkInSubmitting(true);
+    setWalkInError("");
     try {
-      await addWalkIn();
+      await addWalkIn(trimmed);
       await fetchQueue();
+      setShowWalkInModal(false);
+      setWalkInName("");
     } catch (err) {
-      console.error(err);
+      const message = err?.response?.data?.message || "Could not add walk-in. Please try again.";
+      setWalkInError(message);
+    } finally {
+      setWalkInSubmitting(false);
     }
   };
 
@@ -187,7 +218,6 @@ const OperatorDashboard = () => {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] transition-colors duration-300">
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-10">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white">Operator Dashboard</h1>
@@ -278,7 +308,7 @@ const OperatorDashboard = () => {
             </div>
 
             <div className="p-4">
-              <button onClick={handleAddWalkIn} className="w-full bg-linear-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200">
+              <button onClick={openWalkInModal} className="w-full bg-linear-to-r from-indigo-500 to-violet-600 hover:-translate-y-1 text-white rounded-2xl py-4 font-semibold flex items-center justify-center gap-2 active:scale-95 shadow-lg transition-all duration-200">
                 <FaPlus /> Add Walk-In
               </button>
             </div>
@@ -289,6 +319,69 @@ const OperatorDashboard = () => {
           <p className="text-sm text-slate-500 dark:text-slate-400">QueueLess © 2026 • Smart Queue Management System</p>
         </div>
       </div>
+
+      {showWalkInModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+          onClick={closeWalkInModal}
+        >
+          <div
+            className="bg-white dark:bg-[#07111f] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] w-full max-w-sm p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeWalkInModal}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              aria-label="Close"
+            >
+              <FaTimes size={16} />
+            </button>
+
+            <div className="h-12 w-12 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center mb-4">
+              <FaPlus size={18} className="text-indigo-500" />
+            </div>
+
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Add Walk-In</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-5">
+              Enter the customer's name to add them to the queue.
+            </p>
+
+            <form onSubmit={handleSubmitWalkIn}>
+              <input
+                type="text"
+                autoFocus
+                value={walkInName}
+                onChange={(e) => setWalkInName(e.target.value)}
+                placeholder="Customer name"
+                disabled={walkInSubmitting}
+                className="w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all placeholder:text-slate-400"
+              />
+
+              {walkInError && (
+                <p className="text-red-500 text-sm mt-2">{walkInError}</p>
+              )}
+
+              <div className="flex gap-3 mt-5">
+                <button
+                  type="button"
+                  onClick={closeWalkInModal}
+                  disabled={walkInSubmitting}
+                  className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl py-3 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={walkInSubmitting}
+                  className="flex-1 bg-linear-to-r from-indigo-500 to-violet-600 text-white rounded-xl py-3 font-semibold shadow-lg disabled:opacity-50 transition-all"
+                >
+                  {walkInSubmitting ? "Adding..." : "Add to Queue"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

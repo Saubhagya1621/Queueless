@@ -116,6 +116,10 @@ const skipToken = async (req, res) => {
 
 const addWalkIn = async (req, res) => {
   try {
+    const { name } = req.body;
+    if (!name || !name.trim())
+      return res.status(400).json({ message: "Customer name is required" });
+
     const counterId = req.user.counterId;
     const serviceCenterId = req.user.serviceCenterId;
     if (!counterId || !serviceCenterId)
@@ -133,8 +137,10 @@ const addWalkIn = async (req, res) => {
       status: "waiting",
     });
 
+    // userId stays null — this is a walk-in, not a registered user.
+    // Their name is stored directly on the token via walkInName.
     const token = await Token.create({
-      userId: req.user.userId,
+      walkInName: name.trim(),
       serviceCenterId,
       counterId,
       tokenNumber: (counter.currentToken || 0) + 1,

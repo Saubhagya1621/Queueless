@@ -31,11 +31,12 @@ const joinQueue = async (req, res) => {
 
     const existingToken = await Token.findOne({
       userId,
-      serviceCenterId,
-      status: "waiting",
+      status: { $in: ["waiting", "called"] },
     });
     if (existingToken)
-      return res.status(400).json({ message: "You are already in this queue" });
+      return res.status(400).json({
+        message: "You already have an active token. Cancel it first to book a new one.",
+      });
 
     const center = await ServiceCenter.findById(serviceCenterId);
     if (!center)

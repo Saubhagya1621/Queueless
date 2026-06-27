@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import useTheme from "../hooks/useTheme";
 import socket from "../socket/socket";
+import { logoutUser } from "../utils/api";
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -99,10 +100,16 @@ function Navbar() {
     };
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    setDropdownOpen(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.error("Logout API failed:", err);
+    } finally {
+      logout();
+      setDropdownOpen(false);
+      navigate("/");
+    }
   };
 
   const getDashboardLink = () => {

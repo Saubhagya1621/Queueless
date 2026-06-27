@@ -1,7 +1,10 @@
 import mongoose from 'mongoose'
 
 const tokenSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  // Optional now — walk-in customers don't have a User account,
+  // so this stays null for them and their name is stored in walkInName instead.
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  walkInName: { type: String, default: null },
   serviceCenterId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceCenter', required: true },
   counterId: { type: mongoose.Schema.Types.ObjectId, required: true },
   tokenNumber: { type: Number, required: true },
