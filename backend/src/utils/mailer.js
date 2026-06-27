@@ -49,15 +49,19 @@ export const sendYourTurnEmail = async (
   });
 };
 export const sendContactFormEmail = async (name, email, message) => {
-  await getResend().emails.send({
+  const result = await getResend().emails.send({
     from: FROM,
-    to: "saubhagya1603@gmail.com", 
+    to: "saubhagya1603@gmail.com",
     subject: `New QueueLess Contact: ${name}`,
-    html: `<h2>New Contact Form Submission</h2>
-           <ul>
-             <li><strong>Name:</strong> ${name}</li>
-             <li><strong>Email:</strong> ${email}</li>
-             <li><strong>Message:</strong> ${message}</li>
-           </ul>`,
+    html: `
+      <h2>New Contact Form Submission</h2>
+      <p><b>Name:</b> ${name}</p>
+      <p><b>Email:</b> ${email}</p>
+      <p><b>Message:</b> ${message}</p>
+    `,
   });
+
+  console.log("RESEND RESPONSE:", result);
+
+  return result;
 };

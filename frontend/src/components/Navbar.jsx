@@ -15,6 +15,7 @@ function Navbar() {
   const dropdownRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [toastNotification, setToastNotification] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
 
@@ -24,35 +25,25 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
- useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(e.target)
-    ) {
-      setDropdownOpen(false);
-    }
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
 
-    if (
-      notifRef.current &&
-      !notifRef.current.contains(e.target)
-    ) {
-      setNotifOpen(false);
-    }
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
+      }
 
-    if (
-      mobileMenuRef.current &&
-      !mobileMenuRef.current.contains(e.target)
-    ) {
-      setMobileMenuOpen(false);
-    }
-  };
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
-  return () =>
-    document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   useEffect(() => {
     if (!user) return;
 
@@ -67,31 +58,43 @@ function Navbar() {
     }
 
     socket.on("token:called", (data) => {
-      setNotifications((prev) => [
-        {
-          id: Date.now(),
-          message: "Your token is being called 🔔",
-          time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-        ...prev,
-      ]);
+      const notification = {
+        id: Date.now(),
+        message: `🔔 Your token ${
+          data?.tokenNumber || ""
+        } is being called! Please proceed to the counter.`,
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+
+      setNotifications((prev) => [notification, ...prev]);
+
+      setToastNotification(notification);
+
+      setTimeout(() => {
+        setToastNotification(null);
+      }, 5000);
     });
 
     socket.on("queue:updated", () => {
-      setNotifications((prev) => [
-        {
-          id: Date.now(),
-          message: "Queue status updated 📈",
-          time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-        ...prev,
-      ]);
+      const notification = {
+        id: Date.now(),
+        message: "📈 Queue status has been updated.",
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+
+      setNotifications((prev) => [notification, ...prev]);
+
+      setToastNotification(notification);
+
+      setTimeout(() => {
+        setToastNotification(null);
+      }, 5000);
     });
 
     return () => {
@@ -160,6 +163,19 @@ function Navbar() {
 
         {!user && (
           <>
+            <Link
+              to="/about"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+            >
+              About
+            </Link>
+
+            <Link
+              to="/contact"
+              className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+            >
+              Contact Us
+            </Link>
             <Link
               to="/login"
               className="text-sm text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
@@ -273,80 +289,112 @@ function Navbar() {
           </div>
         )}
       </div>
-      <div
-  className="flex md:hidden items-center gap-2"
-  ref={mobileMenuRef}
->
-  <button
-    onClick={toggleTheme}
-    className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-gray-800"
-  >
-    {isDark ? "☀️" : "🌙"}
-  </button>
+      <div className="flex md:hidden items-center gap-2" ref={mobileMenuRef}>
+        <button
+          onClick={toggleTheme}
+          className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center bg-gray-50 dark:bg-gray-800"
+        >
+          {isDark ? "☀️" : "🌙"}
+        </button>
 
-  <button
-    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-    className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center gap-1 bg-gray-50 dark:bg-gray-800"
-  >
-    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
-    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
-    <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
-  </button>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center gap-1 bg-gray-50 dark:bg-gray-800"
+        >
+          <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+          <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+          <span className="w-5 h-0.5 bg-black dark:bg-white"></span>
+        </button>
 
-  {mobileMenuOpen && (
-    <div className="absolute top-full left-4 right-4 mt-3 rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700">
+        {mobileMenuOpen && (
+          <div className="absolute top-full left-4 right-4 mt-3 rounded-2xl bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700">
+            {!user && (
+              <>
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                >
+                  About
+                </Link>
 
-      {!user && (
-        <>
-          <Link
-            to="/login"
-            onClick={() => setMobileMenuOpen(false)}
-             className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
-          >
-            Login
-          </Link>
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                >
+                  Contact Us
+                </Link>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                >
+                  Login
+                </Link>
 
-          <Link
-            to="/register"
-            onClick={() => setMobileMenuOpen(false)}
-             className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
-          >
-            Get Started
-          </Link>
-        </>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-5 py-3 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
+
+            {user && (
+              <>
+                <Link
+                  to={getDashboardLink()}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-5 py-3"
+                >
+                  {getDashboardLabel()}
+                </Link>
+
+                {user.role === "user" && (
+                  <Link
+                    to="/my-token"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-5 py-3"
+                  >
+                    My Token
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-5 py-3 text-red-500"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      {toastNotification && (
+        <div className="fixed top-20 right-5 z-[9999] w-80 rounded-2xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-700 shadow-2xl p-4 animate-slide-in">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl">🔔</div>
+
+            <div>
+              <p className="font-semibold text-gray-800 dark:text-white">
+                New Notification
+              </p>
+
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                {toastNotification.message}
+              </p>
+
+              <p className="text-xs text-gray-400 mt-2">
+                {toastNotification.time}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
-
-      {user && (
-        <>
-          <Link
-            to={getDashboardLink()}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-5 py-3"
-          >
-            {getDashboardLabel()}
-          </Link>
-
-          {user.role === "user" && (
-            <Link
-              to="/my-token"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-5 py-3"
-            >
-              My Token
-            </Link>
-          )}
-
-          <button
-            onClick={handleLogout}
-            className="block w-full text-left px-5 py-3 text-red-500"
-          >
-            Logout
-          </button>
-        </>
-      )}
-    </div>
-  )}
-</div>
     </nav>
   );
 }

@@ -1,6 +1,31 @@
+import { useState } from "react";
+import { sendContactMessage } from "../utils/api";
+import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 
 function ContactUs() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      await sendContactMessage(name, email, message);
+      toast.success("Message sent successfully! We'll get back to you soon.");
+
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      toast.error("Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
@@ -18,30 +43,40 @@ function ContactUs() {
           </p>
 
           {/* Contact Form */}
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <input
               type="text"
               placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
               className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
             />
 
             <input
               type="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
             />
 
             <textarea
               rows="5"
               placeholder="Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              required
               className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-800 dark:text-white outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
-            ></textarea>
+            />
 
             <button
               type="submit"
-              className="w-full rounded-2xl bg-indigo-500 hover:bg-indigo-600 py-3 font-medium text-white transition-all duration-200"
+              disabled={loading}
+              className="w-full rounded-2xl bg-indigo-500 hover:bg-indigo-600 py-3 font-medium text-white transition-all duration-200 disabled:opacity-60"
             >
-              Send Message
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
 
