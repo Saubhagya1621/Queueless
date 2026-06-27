@@ -1,3 +1,4 @@
+import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import {
   getAdminOverview,
@@ -41,7 +42,34 @@ function AdminOverview() {
         setLoading(false);
       }
     };
+
     fetchOverview();
+
+    const socket = io(
+      import.meta.env.VITE_BACKEND_URL ||
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:8000",
+      { withCredentials: true, transports: ["polling", "websocket"] },
+    );
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user.serviceCenterId) {
+      socket.emit("join-room", user.serviceCenterId);
+    }
+
+    socket.on("queue:updated", async () => {
+      try {
+        const data = await getAdminOverview();
+        setCenter(data.center || null);
+        setSummary(data.summary || {});
+        const scorecardData = await getOperatorScorecard();
+        setScorecard(scorecardData.scorecard || []);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   const handleToggle = async (counterId, newStatus) => {

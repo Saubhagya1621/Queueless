@@ -114,7 +114,31 @@ const getOperatorScorecard = async (req, res) => {
       })
     );
 
-    res.status(200).json({ scorecard: result });
+    // Fetch all operators of this service center
+    const allOperators = await User.find({
+      serviceCenterId,
+      role: 'operator'
+    }).select('name email');
+
+    const scorecardMap = new Map(result.map(op => [op.operatorId.toString(), op]));
+
+    const finalResult = allOperators.map(op => {
+      if (scorecardMap.has(op._id.toString())) {
+        return scorecardMap.get(op._id.toString());
+      }
+      return {
+        operatorId: op._id,
+        name: op.name,
+        email: op.email,
+        totalServed: 0,
+        totalSkipped: 0,
+        avgServiceTime: 0,
+        skipRate: 0,
+        performance: 100,
+      };
+    });
+
+    res.status(200).json({ scorecard: finalResult });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
