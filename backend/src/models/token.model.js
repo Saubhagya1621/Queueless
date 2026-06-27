@@ -10,7 +10,8 @@ const tokenSchema = new mongoose.Schema({
   tokenNumber: { type: Number, required: true },
   position: { type: Number, required: true },
   status: { type: String, enum: ['waiting', 'called', 'served', 'skipped', 'cancelled'], default: 'waiting' },
-  estimatedWait: { type: Number, default: 0 }
+  estimatedWait: { type: Number, default: 0 },
+  operatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false }
 }, { timestamps: true })
 
 const Token = mongoose.model('Token', tokenSchema)

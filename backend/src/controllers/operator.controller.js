@@ -46,9 +46,12 @@ const callNext = async (req, res) => {
 
     // 🟩 FIXED: Return 200 with success status false so Axios doesn't drop a 404 runtime error
     if (!next)
-      return res.status(200).json({ success: false, message: "No more tokens in queue" });
+      return res
+        .status(200)
+        .json({ success: false, message: "No more tokens in queue" });
 
     next.status = "called";
+    next.operatorId = req.user.userId;
     await next.save();
 
     if (next.userId?.email) {
@@ -63,7 +66,9 @@ const callNext = async (req, res) => {
 
     try {
       if (io && typeof io.to === "function") {
-        io.to(next.serviceCenterId.toString()).emit("queue:updated", { counterId });
+        io.to(next.serviceCenterId.toString()).emit("queue:updated", {
+          counterId,
+        });
         io.to(next.serviceCenterId.toString()).emit("token:called", {
           tokenId: next._id,
           userId: next.userId,
@@ -79,7 +84,9 @@ const callNext = async (req, res) => {
       console.log("Operator call socket emit error:", socketError.message);
     }
 
-    return res.status(200).json({ success: true, message: "Next token called", token: next });
+    return res
+      .status(200)
+      .json({ success: true, message: "Next token called", token: next });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

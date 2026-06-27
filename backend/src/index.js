@@ -10,6 +10,7 @@ import serviceCenterRoutes from './routes/serviceCenter.routes.js'
 import tokenRoutes from './routes/token.routes.js'
 import operatorRoutes from './routes/operator.routes.js'
 import adminRoutes from './routes/admin.routes.js'
+import contactRoutes from './routes/contact.routes.js'
 
 
 
@@ -41,6 +42,7 @@ app.use('/api/v1/servicecenter', serviceCenterRoutes)
 app.use('/api/v1/token', tokenRoutes)
 app.use('/api/v1/operator', operatorRoutes)
 app.use('/api/v1/admin', adminRoutes)
+app.use('/api/v1/contact', contactRoutes)
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)

@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { getAdminOverview, toggleCounter } from "../utils/api";
+import {
+  getAdminOverview,
+  toggleCounter,
+  getOperatorScorecard,
+} from "../utils/api";
 import Navbar from "../components/Navbar";
 import {
   FaUserClock,
   FaCheckCircle,
   FaThLarge,
+  FaChartBar,
 } from "react-icons/fa";
 
 function AdminOverview() {
@@ -12,6 +17,8 @@ function AdminOverview() {
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [scorecard, setScorecard] = useState([]);
+  const [scorecardLoading, setScorecardLoading] = useState(true);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -19,6 +26,14 @@ function AdminOverview() {
         const data = await getAdminOverview();
         setCenter(data.center || null);
         setSummary(data.summary || {});
+        try {
+          const scorecardData = await getOperatorScorecard();
+          setScorecard(scorecardData.scorecard || []);
+        } catch {
+          setScorecard([]);
+        } finally {
+          setScorecardLoading(false);
+        }
       } catch (err) {
         console.error(err);
         setError("Failed to load admin overview");
@@ -35,7 +50,7 @@ function AdminOverview() {
       setCenter((prev) => ({
         ...prev,
         counters: prev.counters.map((c) =>
-          c._id === counterId ? { ...c, status: newStatus } : c
+          c._id === counterId ? { ...c, status: newStatus } : c,
         ),
       }));
     } catch (err) {
@@ -80,6 +95,21 @@ function AdminOverview() {
                   <div className="h-7 w-16 bg-gray-200 dark:bg-gray-800 rounded-lg" />
                   <div className="h-7 w-16 bg-gray-200 dark:bg-gray-800 rounded-lg" />
                 </div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white dark:bg-gray-900/70 dark:backdrop-blur-xl rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-800 p-6 mt-6">
+            <div className="h-5 w-40 bg-gray-200 dark:bg-gray-800 rounded-lg mb-4" />
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between py-4 border-t border-gray-100 dark:border-gray-800 first:border-t-0"
+              >
+                <div className="space-y-2">
+                  <div className="h-4 w-28 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+                  <div className="h-3 w-20 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+                </div>
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded-full" />
               </div>
             ))}
           </div>
@@ -208,7 +238,10 @@ function AdminOverview() {
           {hasCounters ? (
             <ul className="divide-y divide-gray-100 dark:divide-gray-800">
               {center.counters.map((counter) => (
-                <li key={counter._id} className="flex items-center justify-between py-4">
+                <li
+                  key={counter._id}
+                  className="flex items-center justify-between py-4"
+                >
                   <div>
                     <p className="text-sm font-medium text-[#111827] dark:text-white">
                       {counter.name}
@@ -261,6 +294,100 @@ function AdminOverview() {
                 Counters will show up here once they are added to this center.
               </p>
             </div>
+          )}
+        </div>
+        {/* Operator Scorecard */}
+        <div className="bg-white dark:bg-gray-900/70 dark:backdrop-blur-xl rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-gray-800 p-6 mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <FaChartBar className="text-[#6366F1]" size={16} />
+            <h2 className="text-base font-medium text-[#111827] dark:text-white">
+              Operator Scorecard
+            </h2>
+          </div>
+
+          {scorecardLoading ? (
+            <div className="animate-pulse space-y-3">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-3 border-t border-gray-100 dark:border-gray-800 first:border-t-0"
+                >
+                  <div className="h-4 w-28 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+                  <div className="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded-full" />
+                </div>
+              ))}
+            </div>
+          ) : scorecard.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center py-10">
+              <div className="h-14 w-14 rounded-2xl bg-[#6366F1]/10 flex items-center justify-center mb-4">
+                <FaChartBar size={22} className="text-[#6366F1]" />
+              </div>
+              <p className="text-sm font-medium text-[#111827] dark:text-white">
+                No operator data yet
+              </p>
+              <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1 max-w-xs">
+                Data appears once operators start serving tokens.
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+              {scorecard.map((op) => (
+                <li key={op.operatorId} className="py-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-medium text-[#111827] dark:text-white">
+                        {op.name}
+                      </p>
+                      <div className="flex gap-3 mt-1">
+                        <span className="text-xs text-[#6B7280]">
+                          Served:{" "}
+                          <span className="font-medium text-[#111827] dark:text-white">
+                            {op.totalServed}
+                          </span>
+                        </span>
+                        <span className="text-xs text-[#6B7280]">
+                          Avg:{" "}
+                          <span className="font-medium text-[#111827] dark:text-white">
+                            {op.avgServiceTime} min
+                          </span>
+                        </span>
+                        <span className="text-xs text-[#6B7280]">
+                          Skip:{" "}
+                          <span className="font-medium text-[#111827] dark:text-white">
+                            {op.skipRate}%
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                        op.performance >= 70
+                          ? "bg-[#10B981]/10 text-[#10B981]"
+                          : op.performance >= 40
+                            ? "bg-[#F59E0B]/10 text-[#F59E0B]"
+                            : "bg-red-100 text-red-500"
+                      }`}
+                    >
+                      {op.performance}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${op.performance}%`,
+                        backgroundColor:
+                          op.performance >= 70
+                            ? "#10B981"
+                            : op.performance >= 40
+                              ? "#F59E0B"
+                              : "#EF4444",
+                      }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </main>

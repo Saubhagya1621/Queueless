@@ -72,3 +72,14 @@ export const toggleCounter = async (centerId, counterId, status) => {
   const response = await axiosInstance.patch(`/admin/counter/${centerId}/${counterId}`, { status })
   return response.data
 }
+
+export const getOperatorScorecard = async () => {
+  const response = await axiosInstance.get('/admin/scorecard')
+  return response.data
+}
+
+// CONTACT
+export const sendContactMessage = async (name, email, message) => {
+  const response = await axiosInstance.post('/contact', { name, email, message })
+  return response.data
+}
