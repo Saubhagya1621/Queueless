@@ -27,7 +27,7 @@ function ContactUs() {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
       <Navbar />
 
       <main className="max-w-3xl mx-auto px-4 pt-28 pb-10">

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
+import { FaDownload } from "react-icons/fa";
 
 function MyToken() {
   const [token, setToken] = useState(null);
@@ -188,7 +189,7 @@ function MyToken() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 pt-28">
           <div className="glass-card p-6">
@@ -204,7 +205,7 @@ function MyToken() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
       <Navbar />
 
       <main className="max-w-lg mx-auto px-4 pt-24 pb-10">
@@ -234,118 +235,121 @@ function MyToken() {
           </div>
         ) : (
           <div
-            className={`overflow-hidden glass-card ${
+            className={`rounded-2xl ring-2 ring-indigo-400/50 shadow-[0_0_45px_rgba(99,102,241,0.4)] ${
               token.status === "called"
-                ? "ring-2 ring-green-400 shadow-[0_0_30px_rgba(74,222,128,0.4)]"
+                ? "ring-green-400 shadow-[0_0_45px_rgba(74,222,128,0.45)]"
                 : ""
             }`}
           >
-            <div className="bg-linear-to-r from-indigo-500 to-violet-600 p-5 text-center">
-              <p className="text-indigo-100 text-sm mb-1">Your Token</p>
-              <h1 className="text-5xl font-bold text-white">
-                #{token.tokenNumber}
-              </h1>
-            </div>
-
-            <div className="p-6">
-              <div className="flex justify-center mb-6">
-                <div
-                  ref={qrRef}
-                  className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm"
-                >
-                  <QRCodeCanvas value={getQrValue()} size={140} level="M" />
-                </div>
+            <div className="overflow-hidden glass-card rounded-2xl">
+              <div className="bg-linear-to-r from-indigo-500 to-violet-600 p-5 text-center">
+                <p className="text-indigo-100 text-sm mb-1">Your Token</p>
+                <h1 className="text-5xl font-bold text-white">
+                  #{token.tokenNumber}
+                </h1>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Service Center
-                  </span>
-                  <span className="font-medium text-[#111827] dark:text-white">
-                    {token.serviceCenterId?.name || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Location
-                  </span>
-                  <span className="font-medium text-[#111827] dark:text-white">
-                    {token.serviceCenterId?.location || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Position
-                  </span>
-                  <span className="font-medium text-[#111827] dark:text-white">
-                    {token.position} in line
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Estimated Wait
-                  </span>
-                  <span className="font-medium text-[#111827] dark:text-white">
-                    ~{token.estimatedWait} min
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Status
-                  </span>
-                  <span className="font-medium capitalize text-[#111827] dark:text-white">
-                    {token.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <div className="flex justify-between mb-1.5">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Queue Progress
-                  </span>
-                  <span className="text-xs text-indigo-500 font-medium">
-                    {getProgress(token.position)}%
-                  </span>
-                </div>
-                <div className="w-full h-2.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="p-6">
+                <div className="flex justify-center mb-6">
                   <div
-                    className="h-full bg-linear-to-r from-indigo-500 to-violet-600 rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${getProgress(token.position)}%` }}
-                  />
+                    ref={qrRef}
+                    className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm"
+                  >
+                    <QRCodeCanvas value={getQrValue()} size={140} level="M" />
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-5 flex justify-center">
-                <span
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                    token.status === "waiting"
-                      ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                      : token.status === "called"
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 animate-pulse"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                  }`}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Service Center
+                    </span>
+                    <span className="font-medium text-[#111827] dark:text-white">
+                      {token.serviceCenterId?.name || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Location
+                    </span>
+                    <span className="font-medium text-[#111827] dark:text-white">
+                      {token.serviceCenterId?.location || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Position
+                    </span>
+                    <span className="font-medium text-[#111827] dark:text-white">
+                      {token.position} in line
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Estimated Wait
+                    </span>
+                    <span className="font-medium text-[#111827] dark:text-white">
+                      ~{token.estimatedWait} min
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Status
+                    </span>
+                    <span className="font-medium capitalize text-[#111827] dark:text-white">
+                      {token.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <div className="flex justify-between mb-1.5">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Queue Progress
+                    </span>
+                    <span className="text-xs text-indigo-500 font-medium">
+                      {getProgress(token.position)}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-linear-to-r from-indigo-500 to-violet-600 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${getProgress(token.position)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-center">
+                  <span
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                      token.status === "waiting"
+                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                        : token.status === "called"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 animate-pulse"
+                          : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                    }`}
+                  >
+                    {token.status.charAt(0).toUpperCase() + token.status.slice(1)}
+                  </span>
+                </div>
+
+                <button
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading}
+                  className="mt-6 w-full flex items-center justify-center gap-2 bg-linear-to-r from-indigo-500 to-violet-600 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 text-white font-semibold py-3 rounded-xl transition-all duration-200 text-sm shadow-lg"
                 >
-                  {token.status.charAt(0).toUpperCase() + token.status.slice(1)}
-                </span>
+                  <FaDownload size={14} />
+                  {downloading ? "Generating..." : "Download Receipt (PDF)"}
+                </button>
+
+                <button
+                  onClick={handleCancelToken}
+                  disabled={cancelling || token.status === "called"}
+                  className="mt-3 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                >
+                  {cancelling ? "Cancelling..." : "Cancel Token"}
+                </button>
               </div>
-
-              <button
-                onClick={handleDownloadReceipt}
-                disabled={downloading}
-                className="mt-6 w-full flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-xl transition-all duration-200 text-sm"
-              >
-                {downloading ? "Generating..." : "📄 Download Receipt (PDF)"}
-              </button>
-
-              <button
-                onClick={handleCancelToken}
-                disabled={cancelling || token.status === "called"}
-                className="mt-3 w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
-              >
-                {cancelling ? "Cancelling..." : "Cancel Token"}
-              </button>
             </div>
           </div>
         )}

@@ -89,7 +89,7 @@ function AdminOverview() {
   // ---- Skeleton loader ----
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300">
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] font-poppins transition-colors duration-300">
         <Navbar />
         <main className="max-w-3xl mx-auto px-4 pt-24 pb-8 animate-pulse">
           <div className="h-7 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2" />
@@ -148,7 +148,7 @@ function AdminOverview() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300">
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] font-poppins transition-colors duration-300">
         <Navbar />
         <main className="max-w-3xl mx-auto px-4 pt-24 pb-8">
           <div className="bg-white dark:bg-gray-900/70 dark:backdrop-blur-xl rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-red-100 dark:border-red-900/40 p-10 text-center">
@@ -183,7 +183,7 @@ function AdminOverview() {
   const hasCounters = center?.counters && center.counters.length > 0;
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-950 font-poppins transition-colors duration-300">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] font-poppins transition-colors duration-300">
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 pt-24 pb-8">
         <h1 className="text-2xl font-semibold text-[#111827] dark:text-white mb-1">

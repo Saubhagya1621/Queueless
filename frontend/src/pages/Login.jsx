@@ -83,7 +83,7 @@ function Login() {
 
       {/* Card */}
       <div className="relative z-10 w-full max-w-6xl px-4">
-        <div className="rounded-3xl overflow-hidden bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col lg:flex-row">
+        <div className="rounded-3xl overflow-hidden bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] ring-1 ring-indigo-400/30 shadow-[0_0_45px_rgba(99,102,241,0.25)] flex flex-col lg:flex-row">
         {/* Illustration — hidden on mobile, shown on desktop */}
         <div className="hidden lg:flex flex-1 justify-center">
           <img
@@ -93,10 +93,10 @@ function Login() {
           />
           </div>
          
-        <div className="w-full max-w-md lg:max-w-lg p-8 shrink-0">
+        <div className="w-full max-w-md lg:max-w-lg p-6 shrink-0">
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/30">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-500/30 ring-1 ring-indigo-300/40">
               <span className="text-white font-bold text-sm">Q</span>
             </div>
             <span className="text-xl font-semibold text-gray-800 dark:text-white">
@@ -106,7 +106,7 @@ function Login() {
 
           <Link
             to="/"
-            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-500 transition-colors mb-6"
+            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-500 transition-colors mb-4"
           >
             ← Back to Home
           </Link>
@@ -114,18 +114,18 @@ function Login() {
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-1">
             Welcome back
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
             Login to manage your queue
           </p>
 
           {/* Quick fill */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-3">
             {["operator", "admin"].map((role) => (
               <button
                 key={role}
                 type="button"
                 onClick={() => quickFill(role)}
-                className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 transition-all capitalize"
+                className="flex-1 text-xs font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-500 hover:shadow-[0_0_12px_rgba(99,102,241,0.25)] transition-all capitalize"
               >
                 {role.charAt(0).toUpperCase() + role.slice(1)}
               </button>
@@ -136,7 +136,7 @@ function Login() {
           <button
             type="button"
             onClick={() => setShowCreds((prev) => !prev)}
-            className="w-full text-xs text-indigo-500 hover:text-indigo-600 font-medium mb-5 text-left transition-colors"
+            className="w-full text-xs text-indigo-500 hover:text-indigo-600 font-medium mb-4 text-left transition-colors"
           >
             {showCreds
               ? "▲ Hide demo credentials"
@@ -145,7 +145,7 @@ function Login() {
 
           {/* Credentials card */}
           {showCreds && (
-            <div className="mb-6 rounded-xl border border-white/30 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-4">
+            <div className="mb-4 rounded-xl border border-indigo-200/50 dark:border-indigo-500/30 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-4 shadow-[0_0_20px_rgba(99,102,241,0.12)]">
               <div className="flex gap-2 mb-3">
                 {["operator", "admin"].map((tab) => (
                   <button
@@ -193,12 +193,12 @@ function Login() {
           )}
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-xl mb-4 border border-red-100 dark:border-red-800/30">
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-500 text-sm px-4 py-3 rounded-xl mb-3 border border-red-100 dark:border-red-800/30">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email
@@ -230,13 +230,13 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full glow-btn text-white font-medium py-2.5 rounded-xl transition-all duration-200 mt-2 disabled:opacity-60 cursor-pointer"
+              className="w-full glow-btn text-white font-medium py-2.5 rounded-xl transition-all duration-200 mt-1 disabled:opacity-60 cursor-pointer"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
           {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
+          <div className="flex items-center gap-3 my-4">
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
             <span className="text-xs text-gray-400 dark:text-gray-500">or</span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
@@ -245,7 +245,7 @@ function Login() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-xl transition-all duration-200 text-sm cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)] text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-xl transition-all duration-200 text-sm cursor-pointer"
           >
             <svg width="18" height="18" viewBox="0 0 48 48">
               <path
@@ -267,7 +267,7 @@ function Login() {
             </svg>
             Continue with Google
           </button>
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-6">
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
             Don't have an account?{" "}
             <Link
               to="/register"

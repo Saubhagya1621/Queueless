@@ -137,7 +137,7 @@ const OperatorDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] transition-colors duration-300">
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
         <Navbar />
         <div className="max-w-7xl mx-auto px-6 pt-28 pb-10 animate-pulse">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
@@ -204,7 +204,7 @@ const OperatorDashboard = () => {
 
   if (error)
     return (
-      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] transition-colors duration-300">
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
         <Navbar />
         <div className="max-w-7xl mx-auto px-6 pt-28 pb-10">
           <div className="bg-white dark:bg-[#07111f] rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-red-100 dark:border-red-900/40 p-10 text-center">
@@ -215,7 +215,7 @@ const OperatorDashboard = () => {
     );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] transition-colors duration-300">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300">
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-10">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">

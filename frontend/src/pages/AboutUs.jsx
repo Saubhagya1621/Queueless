@@ -21,7 +21,7 @@ function AboutUs() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-linear-to-br dark:from-[#0a0a23] dark:via-[#1e1145] dark:to-[#2a0e3d] transition-colors duration-300 relative overflow-hidden">
       <div className="absolute -top-20 -left-20 w-80 h-80 bg-indigo-400/20 dark:bg-indigo-700/20 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-violet-400/20 dark:bg-violet-700/20 rounded-full blur-3xl pointer-events-none"></div>
